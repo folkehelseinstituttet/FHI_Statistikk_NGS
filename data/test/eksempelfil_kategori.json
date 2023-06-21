@@ -1,0 +1,49 @@
+{
+    "Dimensions": [
+      {
+        "Value": "AAR",
+        "Title": "År",
+        "Categories": [
+          {
+            "Value": "2018_2018",
+            "Title": "2018-2018",
+            "LevelName": "År"
+          }
+        ]
+      }
+    ],
+    "MeasureTypes": [
+      {
+        "Value": "TELLER",
+        "Title": "Teller"
+      }
+    ],
+    "Flags": [
+       {
+        "Value": 0,
+        "Title": "",
+        "Text": ""
+      },
+      {
+        "Value": 1,
+        "Title": "..",
+        "Text": "Manglende data"
+      },
+      {
+        "Value": 2,
+        "Title": ".",
+        "Text": "Lar seg ikke beregne"
+      },
+      {
+        "Value": 3,
+        "Title": ":",
+        "Text": "Anonymisert"
+      },
+      {
+        "Value": 4,
+        "Title": "-",
+        "Text": "Data ikke tilgjengelig"
+      }
+    ]
+  }
+  

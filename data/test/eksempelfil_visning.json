@@ -1,0 +1,38 @@
+{
+    "Title": "Drikkevann 2018-2019, Teller",
+    "Filters": [
+      {
+        "Dimension": "Measure",
+        "Selected": "TELLER"
+      },
+      {
+        "Dimension": "INDIKATOR",
+        "Selected": "Hyg",
+        "Hidden": true
+      }
+    ],
+    "Rows": [
+      {
+        "Dimension": "GEO",
+        "Selection": [ "0" ]
+      }
+    ],
+    "Columns": [
+      {
+        "Dimension": "AAR",
+        "Selection": [
+          "2018_2018",
+          "2019_2019"
+        ]
+      }
+    ],
+    "Measures": [
+      "TELLER"
+    ],
+    "Visualizations": [
+      {
+        "Type": "Table",
+        "IsEnabled": true
+      }
+    ]
+  }

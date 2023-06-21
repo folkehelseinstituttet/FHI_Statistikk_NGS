@@ -1,0 +1,33 @@
+{
+    "Title": "Prøver per år, samples",
+    "Filters": [
+      {
+        "Dimension": "Measure",
+        "Selected": "nr_samples"
+      }
+    ],
+    "Rows": [
+      {
+        "Dimension": "year",
+        "Selection": [ "1" ]
+      }
+    ],
+    "Columns": [
+      {
+        "Dimension": "year",
+        "Selection": [
+          "1",
+          "2"
+        ]
+      }
+    ],
+    "Measures": [
+      "nr_samples"
+    ],
+    "Visualizations": [
+      {
+        "Type": "Table",
+        "IsEnabled": true
+      }
+    ]
+  }
