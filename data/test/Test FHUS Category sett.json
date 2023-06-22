@@ -1,0 +1,328 @@
+{
+  "Dimensions": [
+    {
+      "Value": "kjønn",
+      "Title": "Kjønn",
+      "Categories": [
+        {
+          "Value": "Kjønn samlet",
+          "Title": "Kjønn samlet",
+          "LevelName": "Kjønn samlet",
+          "Categories": [
+            {
+              "Value": "Mann",
+              "Title": "Mann",
+              "LevelName": "Fordelt på kjønn."
+            },
+            {
+              "Value": "Kvinne",
+              "Title": "Kvinne",
+              "LevelName": "Fordelt på kjønn."
+            }
+          ]
+        }
+      ]	
+    },
+    {
+      "Value": "alderkat",
+      "Title": "Aldersgruppe",
+      "Categories": [
+        {
+		"Value": "Alle alderkat",
+        "Title": "Alle",
+        "LevelName": "Aldersgruppe",	
+		"Categories": [
+			{
+			  "Value": "18-29",
+			  "Title": "18-29",
+			  "LevelName": "Fordelt på alder"
+			},
+			{
+			  "Value": "30-39",
+			  "Title": "30-39",
+			  "LevelName": "Fordelt på alder"
+			},
+			{
+			  "Value": "40-49",
+			  "Title": "40-49",
+			  "LevelName": "Fordelt på alder"
+			},
+			{
+			  "Value": "50-59",
+			  "Title": "50-59",
+			  "LevelName": "Fordelt på alder"
+			},
+			{
+			  "Value": "60-69",
+			  "Title": "60-69",
+			  "LevelName": "Fordelt på alder"
+			},
+			{
+			  "Value": "70+",
+			  "Title": "70+",
+			  "LevelName": "Fordelt på alder"
+			}
+		]
+		}
+      ]
+    },
+    {
+      "Value": "kommune",
+      "Title": "Kommune",
+      "Categories": [
+        {
+          "Value": "Alver",
+          "Title": "Alver",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Askvoll",
+          "Title": "Askvoll",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Askøy",
+          "Title": "Askøy",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Aurland",
+          "Title": "Aurland",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Austevoll",
+          "Title": "Austevoll",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Austrheim",
+          "Title": "Austrheim",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Bergen",
+          "Title": "Bergen",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Bjørnafjorden",
+          "Title": "Bjørnafjorden",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Bremanger",
+          "Title": "Bremanger",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Bømlo",
+          "Title": "Bømlo",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Eidfjord",
+          "Title": "Eidfjord",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Etne",
+          "Title": "Etne",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Fedje",
+          "Title": "Fedje",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Fitjar",
+          "Title": "Fitjar",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Fjaler",
+          "Title": "Fjaler",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Gloppen",
+          "Title": "Gloppen",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Gulen",
+          "Title": "Gulen",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Hyllestad",
+          "Title": "Hyllestad",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Høyanger",
+          "Title": "Høyanger",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Kinn",
+          "Title": "Kinn",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Kvam",
+          "Title": "Kvam",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Kvinnherad",
+          "Title": "Kvinnherad",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Luster",
+          "Title": "Luster",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Lærdal",
+          "Title": "Lærdal",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Masfjorden",
+          "Title": "Masfjorden",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Modalen",
+          "Title": "Modalen",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Osterøy",
+          "Title": "Osterøy",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Samnanger",
+          "Title": "Samnanger",
+          "LevelName": "kommune"
+        },
+        {
+          "Value": "Sogndal",
+          "Title": "Sogndal",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Solund",
+          "Title": "Solund",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Stad",
+          "Title": "Stad",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Stord",
+          "Title": "Stord",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Stryn",
+          "Title": "Stryn",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Sunnfjord",
+          "Title": "Sunnfjord",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Sveio",
+          "Title": "Sveio",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Tysnes",
+          "Title": "Tysnes",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Ullensvang",
+          "Title": "Ullensvang",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Ulvik",
+          "Title": "Ulvik",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Vaksdal",
+          "Title": "Vaksdal",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Vestland",
+          "Title": "Vestland",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Vik",
+          "Title": "Vik",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Voss",
+          "Title": "Voss",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Årdal",
+          "Title": "Årdal",
+          "LevelName": "kommune"
+        },
+		{
+          "Value": "Øygarden",
+          "Title": "Øygarden",
+          "LevelName": "kommune"
+        }
+      ]
+    }
+  ],
+  "MeasureTypes": [
+    {
+      "Value": "trivsel",
+      "Title": "Trivsel"
+    },
+    {
+      "Value": "antall",
+      "Title": "Antall"
+    }
+  ],
+  "Flags": [
+    {
+      "Value": 0,
+      "Title": "",
+      "Text": ""
+    },
+    {
+      "Value": 1,
+      "Title": "..",
+      "Text": "Manglende data"
+    },
+    {
+      "Value": 2,
+      "Title": ".",
+      "Text": "Lar seg ikke beregne"
+    },
+    {
+      "Value": 3,
+      "Title": ":",
+      "Text": "Anonymisert"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "Title": "Test visning titel",
+  "Filters": [
+    {
+      "Dimension": "kjønn",
+      "Selected": "Kvinne"
+    }
+  ],
+  "Rows": [
+    {
+      "Dimension": "kommune",
+      "Selection": [
+        "Alver",
+        "Askvoll"
+      ]
+    }
+  ],
+  "Columns": [
+    {
+      "Dimension": "alderkat",
+      "Selection": [
+        "18-29",
+        "30-39",
+        "40-49",
+		"50-59",
+		"Alle alderkat"
+      ]
+    }
+  ],
+  "Measures": [
+    "trivsel"
+  ],
+  "Visualizations": [
+    {
+      "Type": "Table",
+      "IsEnabled": true
+    },
+    {
+      "Type": "Graph",
+      "IsEnabled": true
+    },
+    {
+      "Type": "Map",
+      "IsEnabled": false
+    }
+  ]
+}
