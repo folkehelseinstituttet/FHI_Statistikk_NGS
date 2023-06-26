@@ -1,5 +1,4 @@
-year,nr_samples,SPVFLAGG
-1,10,0
-2,15,0
-3,11,0
-4,9,0
+year,antall,SPVFLAGG
+2021,100,0
+2022,200,0
+2023,150,0

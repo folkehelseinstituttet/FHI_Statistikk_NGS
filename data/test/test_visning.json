@@ -1,33 +1,30 @@
 {
-    "Title": "Prøver per år, samples",
-    "Filters": [
-      {
-        "Dimension": "Measure",
-        "Selected": "nr_samples"
-      }
-    ],
-    "Rows": [
-      {
-        "Dimension": "year",
-        "Selection": [ "1" ]
-      }
-    ],
-    "Columns": [
-      {
-        "Dimension": "year",
-        "Selection": [
-          "1",
-          "2"
-        ]
-      }
-    ],
-    "Measures": [
-      "nr_samples"
-    ],
-    "Visualizations": [
-      {
-        "Type": "Table",
-        "IsEnabled": true
-      }
-    ]
-  }
+  "Title": "Antall prøver sekvensert",
+  "Rows": [
+    {
+      "Dimension": "kommune",
+      "Selection": [
+        "Oslo"
+      ]
+    }
+  ],
+  "Columns": [
+    {
+      "Dimension": "year",
+      "Selection": [
+        "2021",
+        "2022",
+        "2023"
+      ]
+    }
+  ],
+  "Measures": [
+    "antall"
+  ],
+  "Visualizations": [
+    {
+      "Type": "Table",
+      "IsEnabled": true
+    }
+  ]
+}

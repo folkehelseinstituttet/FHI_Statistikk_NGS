@@ -1,54 +1,58 @@
 {
-    "Dimensions": [
-      {
-        "Value": "year",
-        "Title": "År",
-        "Categories": [
-          {
-            "Value": "1",
-            "Title": "År 1",
-            "LevelName": "År"
-          },
-          {
-            "Value": "2",
-            "Title": "År 2",
-            "LevelName": "År"
-          }
-        ]
-      }
-    ],
-    "MeasureTypes": [
-      {
-        "Value": "nr_samples",
-        "Title": "Prøver"
-      }
-    ],
-    "Flags": [
-       {
-        "Value": 0,
-        "Title": "",
-        "Text": ""
-      },
-      {
-        "Value": 1,
-        "Title": "..",
-        "Text": "Manglende data"
-      },
-      {
-        "Value": 2,
-        "Title": ".",
-        "Text": "Lar seg ikke beregne"
-      },
-      {
-        "Value": 3,
-        "Title": ":",
-        "Text": "Anonymisert"
-      },
-      {
-        "Value": 4,
-        "Title": "-",
-        "Text": "Data ikke tilgjengelig"
-      }
-    ]
-  }
-  
+  "Dimensions": [
+    {
+      "Value": "year",
+      "Title": "År",
+      "Categories": [
+        {
+          "Value": "2021",
+          "Title": "2021",
+          "LevelName": "År"
+        },
+        {
+          "Value": "2022",
+          "Title": "2022",
+          "LevelName": "År"
+        },
+        {
+          "Value": "2023",
+          "Title": "2023",
+          "LevelName": "År"
+        }
+      ]
+    }
+  ],
+  "MeasureTypes": [
+    {
+      "Value": "antall",
+      "Title": "Antall"
+    }
+  ],
+  "Flags": [
+     {
+      "Value": 0,
+      "Title": "",
+      "Text": ""
+    },
+    {
+      "Value": 1,
+      "Title": "..",
+      "Text": "Manglende data"
+    },
+    {
+      "Value": 2,
+      "Title": ".",
+      "Text": "Lar seg ikke beregne"
+    },
+    {
+      "Value": 3,
+      "Title": ":",
+      "Text": "Anonymisert"
+    },
+    {
+      "Value": 4,
+      "Title": "-",
+      "Text": "Data ikke tilgjengelig"
+    }
+  ]
+}
