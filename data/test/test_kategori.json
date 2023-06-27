@@ -20,6 +20,17 @@
           "LevelName": "År"
         }
       ]
+    },
+    {
+      "Value": "kommune",
+      "Title": "Kommune",
+      "Categories": [ 
+        {
+          "Value": "Oslo",
+          "Title": "Oslo",
+          "LevelName": "Kommune"
+        }
+      ]
     }
   ],
   "MeasureTypes": [

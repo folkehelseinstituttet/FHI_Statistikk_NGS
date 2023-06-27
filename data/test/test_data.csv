@@ -1,4 +1,4 @@
-year,antall,SPVFLAGG
-2021,100,0
-2022,200,0
-2023,150,0
+kommune,year,antall,SPVFLAGG
+Oslo,2021,100,0
+Oslo,2022,200,0
+Oslo,2023,150,0
