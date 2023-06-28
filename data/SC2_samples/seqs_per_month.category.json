@@ -1,0 +1,187 @@
+{
+    "Dimensions": [
+        {
+          "Value": "YEAR",
+          "Title": "År",
+          "Categories": [
+            {
+              "Value": "2022",
+              "Title": "2022",
+                "LevelName": "År"
+            },
+            {
+              "Value": "2023",
+              "Title": "2023",
+              "LevelName": "År"
+            }
+          ]
+        },
+        {
+          "Value": "MONTH",
+          "Title": "Måned",
+          "Categories": [
+            {
+              "Value": "1",
+              "Title": "Januar",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "2",
+              "Title": "Februar",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "3",
+              "Title": "Januar",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "4",
+              "Title": "April",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "5",
+              "Title": "Mai",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "6",
+              "Title": "Juni",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "7",
+              "Title": "Juli",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "8",
+              "Title": "August",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "9",
+              "Title": "September",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "10",
+              "Title": "Oktober",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "11",
+              "Title": "November",
+              "LevelName": "Måned"
+            },
+            {
+              "Value": "12",
+              "Title": "Desember",
+              "LevelName": "Måned"
+            }
+          ]
+        },
+        {
+          "Value": "Fylke",
+          "Title": "Fylke",
+          "Categories": [
+            {
+              "Value": "Totalt",
+              "Title": "Alle fylker",
+              "Categories":
+              [
+                {
+                  "Value": "Agder",
+                  "Title": "Agder",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Innlandet",
+                  "Title": "Innlandet",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Møre og Romsdal",
+                  "Title": "Møre og Romsdal",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Nordland",
+                  "Title": "Nordland",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Oslo",
+                  "Title": "Oslo",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Rogaland",
+                  "Title": "Rogaland",
+                  "LevelName": "Fylke"
+                },
+                {
+                  "Value": "Troms og Finnmark",
+                  "Title": "Troms og Finnmark",
+                  "LevelName":"Fylke"
+                },
+                {
+                  "Value": "Trøndelag",
+                  "Title": "Trøndelag",
+                  "LevelName":"Fylke"
+                },
+                {
+                  "Value": "Vestfold og Telemark",
+                  "Title": "Vestfold og Telemark",
+                  "LevelName":"Fylke"
+                },
+                {
+                  "Value": "Vestland",
+                  "Title": "Vestland",
+                  "LevelName":"Fylke"
+                },
+                {
+                  "Value": "Viken",
+                  "Title": "Viken",
+                  "LevelName":"Fylke"
+                }
+              ]
+            }
+          ]
+        }
+    ],
+    "MeasureTypes": [
+        {
+          "Value": "n",
+          "Title": "Antall"
+        }
+      ],
+      "Flags": [
+        {
+          "Value": 0,
+          "Title": "",
+          "Text": ""
+        },
+        {
+          "Value": 1,
+          "Title": "..",
+          "Text": "Manglende data"
+        },
+        {
+          "Value": 2,
+          "Title": ".",
+          "Text": "Lar seg ikke beregne"
+        },
+        {
+          "Value": 3,
+          "Title": ":",
+          "Text": "Anonymisert"
+        },
+        {
+          "Value": 4,
+          "Title": "-",
+          "Text": "Data ikke tilgjengelig"
+        }
+      ]
+}

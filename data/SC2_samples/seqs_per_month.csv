@@ -1,0 +1,169 @@
+MONTH,YEAR,Fylke,n,SPVFLAGG
+1,2022,Agder,0,0
+1,2022,Innlandet,0,0
+1,2022,Møre og Romsdal,0,0
+1,2022,Nordland,0,0
+1,2022,Oslo,0,0
+1,2022,Rogaland,0,0
+1,2022,Totalt,0,0
+1,2022,Troms og Finnmark,0,0
+1,2022,Trøndelag,0,0
+1,2022,Vestfold og Telemark,0,0
+1,2022,Vestland,0,0
+1,2022,Viken,0,0
+1,2023,Agder,70,0
+1,2023,Innlandet,4,0
+1,2023,Møre og Romsdal,53,0
+1,2023,Nordland,9,0
+1,2023,Oslo,12,0
+1,2023,Rogaland,49,0
+1,2023,Totalt,566,0
+1,2023,Troms og Finnmark,42,0
+1,2023,Trøndelag,61,0
+1,2023,Vestfold og Telemark,71,0
+1,2023,Vestland,69,0
+1,2023,Viken,126,0
+2,2022,Agder,0,0
+2,2022,Innlandet,0,0
+2,2022,Møre og Romsdal,0,0
+2,2022,Nordland,0,0
+2,2022,Oslo,0,0
+2,2022,Rogaland,0,0
+2,2022,Totalt,0,0
+2,2022,Troms og Finnmark,0,0
+2,2022,Trøndelag,0,0
+2,2022,Vestfold og Telemark,0,0
+2,2022,Vestland,0,0
+2,2022,Viken,0,0
+2,2023,Agder,33,0
+2,2023,Innlandet,2,0
+2,2023,Møre og Romsdal,66,0
+2,2023,Nordland,12,0
+2,2023,Oslo,26,0
+2,2023,Rogaland,27,0
+2,2023,Totalt,481,0
+2,2023,Troms og Finnmark,31,0
+2,2023,Trøndelag,66,0
+2,2023,Vestfold og Telemark,80,0
+2,2023,Vestland,46,0
+2,2023,Viken,91,0
+3,2022,Agder,0,0
+3,2022,Innlandet,0,0
+3,2022,Møre og Romsdal,0,0
+3,2022,Nordland,0,0
+3,2022,Oslo,0,0
+3,2022,Rogaland,0,0
+3,2022,Totalt,0,0
+3,2022,Troms og Finnmark,0,0
+3,2022,Trøndelag,0,0
+3,2022,Vestfold og Telemark,0,0
+3,2022,Vestland,0,0
+3,2022,Viken,0,0
+3,2023,Agder,27,0
+3,2023,Innlandet,6,0
+3,2023,Møre og Romsdal,89,0
+3,2023,Nordland,13,0
+3,2023,Oslo,67,0
+3,2023,Rogaland,57,0
+3,2023,Totalt,707,0
+3,2023,Troms og Finnmark,29,0
+3,2023,Trøndelag,94,0
+3,2023,Vestfold og Telemark,91,0
+3,2023,Vestland,47,0
+3,2023,Viken,187,0
+4,2022,Agder,0,0
+4,2022,Innlandet,0,0
+4,2022,Møre og Romsdal,0,0
+4,2022,Nordland,0,0
+4,2022,Oslo,0,0
+4,2022,Rogaland,0,0
+4,2022,Totalt,0,0
+4,2022,Troms og Finnmark,0,0
+4,2022,Trøndelag,0,0
+4,2022,Vestfold og Telemark,0,0
+4,2022,Vestland,0,0
+4,2022,Viken,0,0
+4,2023,Agder,28,0
+4,2023,Innlandet,8,0
+4,2023,Møre og Romsdal,41,0
+4,2023,Nordland,18,0
+4,2023,Oslo,48,0
+4,2023,Rogaland,51,0
+4,2023,Totalt,554,0
+4,2023,Troms og Finnmark,19,0
+4,2023,Trøndelag,82,0
+4,2023,Vestfold og Telemark,74,0
+4,2023,Vestland,46,0
+4,2023,Viken,139,0
+5,2022,Agder,0,0
+5,2022,Innlandet,0,0
+5,2022,Møre og Romsdal,0,0
+5,2022,Nordland,0,0
+5,2022,Oslo,0,0
+5,2022,Rogaland,0,0
+5,2022,Totalt,0,0
+5,2022,Troms og Finnmark,0,0
+5,2022,Trøndelag,0,0
+5,2022,Vestfold og Telemark,0,0
+5,2022,Vestland,0,0
+5,2022,Viken,0,0
+5,2023,Agder,9,0
+5,2023,Innlandet,4,0
+5,2023,Møre og Romsdal,19,0
+5,2023,Nordland,1,0
+5,2023,Oslo,52,0
+5,2023,Rogaland,20,0
+5,2023,Totalt,258,0
+5,2023,Troms og Finnmark,9,0
+5,2023,Trøndelag,31,0
+5,2023,Vestfold og Telemark,27,0
+5,2023,Vestland,15,0
+5,2023,Viken,71,0
+11,2022,Agder,1,0
+11,2022,Innlandet,2,0
+11,2022,Møre og Romsdal,2,0
+11,2022,Nordland,0,0
+11,2022,Oslo,0,0
+11,2022,Rogaland,0,0
+11,2022,Totalt,58,0
+11,2022,Troms og Finnmark,0,0
+11,2022,Trøndelag,39,0
+11,2022,Vestfold og Telemark,0,0
+11,2022,Vestland,8,0
+11,2022,Viken,6,0
+11,2023,Agder,0,0
+11,2023,Innlandet,0,0
+11,2023,Møre og Romsdal,0,0
+11,2023,Nordland,0,0
+11,2023,Oslo,0,0
+11,2023,Rogaland,0,0
+11,2023,Totalt,0,0
+11,2023,Troms og Finnmark,0,0
+11,2023,Trøndelag,0,0
+11,2023,Vestfold og Telemark,0,0
+11,2023,Vestland,0,0
+11,2023,Viken,0,0
+12,2022,Agder,59,0
+12,2022,Innlandet,10,0
+12,2022,Møre og Romsdal,123,0
+12,2022,Nordland,19,0
+12,2022,Oslo,32,0
+12,2022,Rogaland,46,0
+12,2022,Totalt,1168,0
+12,2022,Troms og Finnmark,87,0
+12,2022,Trøndelag,220,0
+12,2022,Vestfold og Telemark,163,0
+12,2022,Vestland,67,0
+12,2022,Viken,341,0
+12,2023,Agder,0,0
+12,2023,Innlandet,0,0
+12,2023,Møre og Romsdal,0,0
+12,2023,Nordland,0,0
+12,2023,Oslo,0,0
+12,2023,Rogaland,0,0
+12,2023,Totalt,0,0
+12,2023,Troms og Finnmark,0,0
+12,2023,Trøndelag,0,0
+12,2023,Vestfold og Telemark,0,0
+12,2023,Vestland,0,0
+12,2023,Viken,0,0
