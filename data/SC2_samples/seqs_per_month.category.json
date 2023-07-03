@@ -32,7 +32,7 @@
             },
             {
               "Value": "3",
-              "Title": "Januar",
+              "Title": "Mars",
               "LevelName": "Måned"
             },
             {
@@ -83,77 +83,75 @@
           ]
         },
         {
-          "Value": "Fylke",
+          "Value": "FYLKE",
           "Title": "Fylke",
           "Categories": [
             {
+              "Value": "Agder",
+              "Title": "Agder",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Innlandet",
+              "Title": "Innlandet",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Møre og Romsdal",
+              "Title": "Møre og Romsdal",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Nordland",
+              "Title": "Nordland",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Oslo",
+              "Title": "Oslo",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Rogaland",
+              "Title": "Rogaland",
+              "LevelName": "Fylke"
+            },
+            {
+              "Value": "Troms og Finnmark",
+              "Title": "Troms og Finnmark",
+              "LevelName":"Fylke"
+            },
+            {
+              "Value": "Trøndelag",
+              "Title": "Trøndelag",
+              "LevelName":"Fylke"
+            },
+            {
+              "Value": "Vestfold og Telemark",
+              "Title": "Vestfold og Telemark",
+              "LevelName":"Fylke"
+            },
+            {
+              "Value": "Vestland",
+              "Title": "Vestland",
+              "LevelName":"Fylke"
+            },
+            {
+              "Value": "Viken",
+              "Title": "Viken",
+              "LevelName":"Fylke"
+            },
+            {
               "Value": "Totalt",
               "Title": "Alle fylker",
-              "Categories":
-              [
-                {
-                  "Value": "Agder",
-                  "Title": "Agder",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Innlandet",
-                  "Title": "Innlandet",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Møre og Romsdal",
-                  "Title": "Møre og Romsdal",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Nordland",
-                  "Title": "Nordland",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Oslo",
-                  "Title": "Oslo",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Rogaland",
-                  "Title": "Rogaland",
-                  "LevelName": "Fylke"
-                },
-                {
-                  "Value": "Troms og Finnmark",
-                  "Title": "Troms og Finnmark",
-                  "LevelName":"Fylke"
-                },
-                {
-                  "Value": "Trøndelag",
-                  "Title": "Trøndelag",
-                  "LevelName":"Fylke"
-                },
-                {
-                  "Value": "Vestfold og Telemark",
-                  "Title": "Vestfold og Telemark",
-                  "LevelName":"Fylke"
-                },
-                {
-                  "Value": "Vestland",
-                  "Title": "Vestland",
-                  "LevelName":"Fylke"
-                },
-                {
-                  "Value": "Viken",
-                  "Title": "Viken",
-                  "LevelName":"Fylke"
-                }
-              ]
+              "LevelName":"Fylke"
             }
           ]
         }
     ],
     "MeasureTypes": [
         {
-          "Value": "n",
+          "Value": "ANTALL",
           "Title": "Antall"
         }
       ],
