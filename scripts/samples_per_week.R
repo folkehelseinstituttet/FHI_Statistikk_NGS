@@ -7,6 +7,8 @@ library(jsonlite)
 # Only include what we have data for 
 # Then it will be important to generate the category file from the actual data
 
+# Maybe better to just operate with year-months together
+
 # Create the data structure that will be filled with values. Using strings only to get factors later in crossing()
 month_numbers <- as.character(1:12)
 fylke_names   <- c("Agder", "Innlandet", "Møre og Romsdal", "Nordland", "Oslo", "Rogaland", "Troms og Finnmark", "Trøndelag", "Vestfold og Telemark", "Vestland", "Viken", "Totalt")
@@ -61,47 +63,44 @@ for (i in 1:length(files)) {
 # Remove duplicate entries (identical rows)
 df <- df %>% distinct()
 
-# Drop samples with no sample date
-df <- df %>% 
+# Drop samples and create columns
+df_mod <- df %>% 
+  # Drop samples with no date or Fylke
   filter(!is.na(Prøvedato2)) %>% 
+  filter(Fylke != "0") %>% 
   # Fix date format
   rename("PROVE_TATT" = Prøvedato2) %>% 
+  rename("FYLKE" = "Fylke") %>% 
   # Convert to date
   mutate(PROVE_TATT = dmy(PROVE_TATT)) %>% 
   # Add year and month columns
   mutate(MONTH = month(PROVE_TATT),
-         YEAR = year(PROVE_TATT))
+         month_name = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway"),
+         YEAR = year(PROVE_TATT)) %>% 
+  unite("YEARMONTH", c(YEAR, month_name), sep = "-", remove = FALSE) %>% 
+  mutate(YEARMONTH = factor(YEARMONTH)) %>% 
+  # Remove samples with wrongly formatted dates
+  filter(!is.na(PROVE_TATT))
 
 
 # Calculate samples per month per year per Fylke and total for the country
-fylke_month <- df %>% 
-  group_by(MONTH, YEAR, Fylke) %>% 
-  count() %>% 
-  ungroup() %>% 
-  # Remove empty Fylkenavn
-  filter(str_detect(Fylke, "")) %>% 
-  # Some Fylke are named zero
-  filter(Fylke != "0") %>% 
-  # Drop empty year info
-  filter(!is.na(YEAR)) %>% 
-  rename("FYLKE" = "Fylke") %>% 
-  mutate(MONTH = as.character(MONTH),
-         YEAR = as.character(YEAR))
+fylke_month <- df_mod %>% 
+  #count(MONTH, YEAR, Fylke) %>% 
+  count(YEARMONTH, FYLKE) %>% 
+  rename("ANTALL" = "n")
 
 # Calculate samples per month per year for all Fylker
-total_month <- df %>% 
-  group_by(MONTH, YEAR) %>% 
-  count() %>% 
-  ungroup() %>% 
-  add_column("Fylke" = "Totalt") %>% 
-  # Drop empty year info
-  filter(!is.na(YEAR)) %>% 
-  rename("FYLKE" = "Fylke") %>% 
-  mutate(MONTH = as.character(MONTH),
-         YEAR = as.character(YEAR))
+total_month <- df_mod %>% 
+  count(YEARMONTH) %>% 
+  rename("ANTALL" = "n") %>% 
+  add_column("FYLKE" = "Totalt")
 
 # Combine data
 data <- bind_rows(fylke_month, total_month) 
+
+# TODO: How and where to order the YEARMONTH column correctly? 
+# Should be independent of the data
+https://stackoverflow.com/questions/15103562/sort-year-month-column-by-year-and-month
 
 # Join with final data structure to get all possible combinations of month, year and fylke
 final_data <- left_join(final_data, data) %>% 
