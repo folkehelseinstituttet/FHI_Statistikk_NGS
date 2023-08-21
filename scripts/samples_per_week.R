@@ -11,7 +11,7 @@ library(jsonlite)
 
 # Create the data structure that will be filled with values. Using strings only to get factors later in crossing()
 month_numbers <- as.character(1:12)
-fylke_names   <- c("Agder", "Innlandet", "Møre og Romsdal", "Nordland", "Oslo", "Rogaland", "Troms og Finnmark", "Trøndelag", "Vestfold og Telemark", "Vestland", "Viken", "Totalt")
+fylke_names   <- c("Agder", "Innlandet", "Møre og Romsdal", "Nordland", "Oslo", "Rogaland", "Troms og Finnmark", "Trøndelag", "Vestfold og Telemark", "Vestland", "Viken", "Ukjent fylke", "Totalt")
 years         <- c("2022", "2023")
 
 # Create all possible combinations of fylke number, fylke name and year
@@ -22,6 +22,85 @@ final_data <- crossing(month_numbers, years, fylke_names) %>%
     "YEAR"   = "years",
     "FYLKE"  = "fylke_names"
   )
+
+
+# MASSERT UTSLUSNINGSFIL LAGET I SIKKER SONE ------------------------------
+
+# Les filen
+df <- read_tsv("data/SC2_samples/2023.08.15-SARS-CoV-2_samples_for_FHI_Statistikk.tsv.zip")
+
+# Denne filen inneholder alle SARS-CoV-2-prøver som har "Test_status" "A". 
+# ToDo: Er alle disse relevante å ta med? Noen som skal ut?
+# TODO: bør sjekke om det er noen fylkenavn som ikke er med i listen over
+# TODO: Trenger vi dele inn i aldersgruppe? Blir fort for små tall...
+
+# Hva er det jeg trenger å ta med videre?
+# Kanskje enklere å trekke ut info separat og binde sammen senere enn å pivotere først?
+
+# I MSIS i dag på FHI Statistikk kan man filtrere på Aldersgruppe, Kjønn, Fylke, og Måned (i tillegg til smittestd Norge eller utlandet).
+# Alt dette bør derfor være regnet ut og tilgjengelig i samme csv-fil.
+
+# Først regne ut antall prøver per måned per fylke 
+# Denne informasjonen står i alle radene 
+
+# Date formats have changed at some point. Harmonize this and merge before further processing
+dates_1 <- df %>% 
+  # Pull out dates om day.month.year format
+  filter(str_detect(Sample_date, "\\.")) %>% 
+  # Convert to year-month-day
+  mutate(Sample_date = lubridate::dmy_hms(Sample_date))
+
+dates_2 <- df %>% 
+  # Pull out dates om day.month.year format
+  filter(str_detect(Sample_date, "-")) %>% 
+  # Convert to year-month-day
+  mutate(Sample_date = lubridate::ymd(Sample_date)) 
+
+dates <- rbind(dates_1, dates_2)
+
+df_mod <- dates %>% 
+  select("PROVE_TATT" = Sample_date, 
+         "FYLKE" = Fylke, 
+         "FODT_AAR" = Born_year, 
+         "FODT_MND" = Born_month, 
+         "KJONN" = Gender) %>% 
+  # Remove identical rows
+  distinct() %>% 
+  # Rename NA til "Ukjent fylke" and convert to factor
+  mutate(FYLKE = factor(replace_na(FYLKE, "Ukjent fylke"))) %>% 
+  # Drop samples with no date 
+  filter(!is.na(PROVE_TATT)) %>% 
+  # Add year and month columns
+  mutate(MONTH = month(PROVE_TATT),
+         month_name = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway"),
+         YEAR = year(PROVE_TATT)) %>% 
+  unite("YEARMONTH", c(YEAR, month_name), sep = "-", remove = FALSE) %>% 
+  mutate(YEARMONTH = factor(YEARMONTH)) %>% 
+  # Remove samples with wrongly formatted dates
+  filter(!is.na(PROVE_TATT))
+
+# Calculate samples per month per year per Fylke and total for the country
+fylke_month <- df_mod %>% 
+  #count(MONTH, YEAR, Fylke) %>% 
+  count(YEARMONTH, FYLKE) %>% 
+  rename("ANTALL" = "n")
+
+# Calculate samples per month per year for all Fylker
+total_month <- df_mod %>% 
+  count(YEARMONTH) %>% 
+  rename("ANTALL" = "n") %>% 
+  add_column("FYLKE" = "Totalt") %>% 
+  select(YEARMONTH, FYLKE, ANTALL)
+
+# Calculate per age group per fylke per month per year
+
+# Combine data
+data <- bind_rows(fylke_month, total_month) 
+
+
+
+# UTSLUSNINGSFILENE FRA SIKKER SONE ---------------------------------------
+
 
 # Les alle utslusningsfilene fra LabWare
 files <- list.files(path = "N:/Virologi/Influensa/2223/LabwareUttrekk/", 
