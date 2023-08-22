@@ -11,17 +11,20 @@ library(jsonlite)
 
 # Create the data structure that will be filled with values. Using strings only to get factors later in crossing()
 month_numbers <- as.character(1:12)
+month_names   <- lubridate::month(1:12, label = T, abbr = T, locale = "Norwegian_Norway") 
 fylke_names   <- c("Agder", "Innlandet", "Møre og Romsdal", "Nordland", "Oslo", "Rogaland", "Troms og Finnmark", "Trøndelag", "Vestfold og Telemark", "Vestland", "Viken", "Ukjent fylke", "Totalt")
 years         <- c("2022", "2023")
 
 # Create all possible combinations of fylke number, fylke name and year
-final_data <- crossing(month_numbers, years, fylke_names) %>% 
+final_data <- crossing(month_names, years, fylke_names) %>% 
   # Create new factor columns
   rename(
-    "MONTH"  = "month_numbers",
+    "MONTH"  = "month_names",
     "YEAR"   = "years",
     "FYLKE"  = "fylke_names"
-  )
+  ) %>% 
+  # Create YEARMONTH column for combining later
+  unite("YEARMONTH", c("YEAR", "MONTH"), sep = "-", remove = T)
 
 
 # MASSERT UTSLUSNINGSFIL LAGET I SIKKER SONE ------------------------------
@@ -97,6 +100,42 @@ total_month <- df_mod %>%
 # Combine data
 data <- bind_rows(fylke_month, total_month) 
 
+# Join with final data structure to get all possible combinations of month, year and fylke
+
+final_data <- left_join(final_data, data, by = join_by("YEARMONTH", "FYLKE")) %>% 
+  # Create new  columns
+  separate(YEARMONTH, into = c("YEAR", "MONTH"), sep = "-", remove = T) %>% 
+  mutate(YEAR = as.factor(YEAR),
+         MONTH = as.factor(MONTH),
+         FYLKE = as.factor(FYLKE)) %>% 
+  # Add flags for FHI Statistikk
+  add_column("SPVFLAGG" = 0) %>% # 0 er default og betyr at verdien finnes i tabellen
+  mutate(SPVFLAGG = case_when(
+    is.na(ANTALL) ~ 1, # Sett SPVFLAGG til 1 hvis NA. Altså at vi ikke har samlet inn data for denne perioden
+    ANTALL < 5 ~ 3, # Vi setter alle verdier lavere enn 5 til 0
+    .default = 0
+  )) %>% 
+  # Replace NA with 0
+  mutate(ANTALL = replace_na(ANTALL, 0)) %>% 
+  # Change all numbers < 5 to zero
+  mutate(ANTALL = case_when(
+    ANTALL < 5 ~ 0,
+    .default = ANTALL
+  )) 
+
+
+# Write as csv
+write_csv(final_data, 
+          file = paste0("data/SC2_samples/", Sys.Date(), "_seqs_per_month_per_fylke.csv"))
+
+
+
+# Pangolin lineages -------------------------------------------------------
+
+# Tanker:
+# På hvilket pango-nivå skal vi legge oss?
+# Skal vi stratifisere etter fylke? Blir mye prikking kanskje?
+# Hvordan skal kategori-filen utformes? Blir det samme som fylke bare for pango?
 
 
 # UTSLUSNINGSFILENE FRA SIKKER SONE ---------------------------------------
