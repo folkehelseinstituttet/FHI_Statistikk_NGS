@@ -1,0 +1,313 @@
+YEAR,MONTH,FYLKE,ANTALL,SPVFLAGG
+2022,jan,Agder,0,1
+2022,jan,Innlandet,0,1
+2022,jan,Møre og Romsdal,0,1
+2022,jan,Nordland,0,1
+2022,jan,Oslo,0,1
+2022,jan,Rogaland,0,1
+2022,jan,Totalt,0,1
+2022,jan,Troms og Finnmark,0,1
+2022,jan,Trøndelag,0,1
+2022,jan,Ukjent fylke,0,1
+2022,jan,Vestfold og Telemark,0,1
+2022,jan,Vestland,0,1
+2022,jan,Viken,0,1
+2023,jan,Agder,106,0
+2023,jan,Innlandet,0,3
+2023,jan,Møre og Romsdal,98,0
+2023,jan,Nordland,28,0
+2023,jan,Oslo,16,0
+2023,jan,Rogaland,73,0
+2023,jan,Totalt,942,0
+2023,jan,Troms og Finnmark,77,0
+2023,jan,Trøndelag,148,0
+2023,jan,Ukjent fylke,0,3
+2023,jan,Vestfold og Telemark,111,0
+2023,jan,Vestland,76,0
+2023,jan,Viken,205,0
+2022,feb,Agder,0,1
+2022,feb,Innlandet,0,1
+2022,feb,Møre og Romsdal,0,1
+2022,feb,Nordland,0,1
+2022,feb,Oslo,0,1
+2022,feb,Rogaland,0,1
+2022,feb,Totalt,0,1
+2022,feb,Troms og Finnmark,0,1
+2022,feb,Trøndelag,0,1
+2022,feb,Ukjent fylke,0,1
+2022,feb,Vestfold og Telemark,0,1
+2022,feb,Vestland,0,1
+2022,feb,Viken,0,1
+2023,feb,Agder,20,0
+2023,feb,Innlandet,0,1
+2023,feb,Møre og Romsdal,26,0
+2023,feb,Nordland,6,0
+2023,feb,Oslo,17,0
+2023,feb,Rogaland,14,0
+2023,feb,Totalt,246,0
+2023,feb,Troms og Finnmark,15,0
+2023,feb,Trøndelag,44,0
+2023,feb,Ukjent fylke,0,3
+2023,feb,Vestfold og Telemark,47,0
+2023,feb,Vestland,15,0
+2023,feb,Viken,41,0
+2022,mar,Agder,0,1
+2022,mar,Innlandet,0,1
+2022,mar,Møre og Romsdal,0,1
+2022,mar,Nordland,0,1
+2022,mar,Oslo,0,1
+2022,mar,Rogaland,0,1
+2022,mar,Totalt,0,1
+2022,mar,Troms og Finnmark,0,1
+2022,mar,Trøndelag,0,1
+2022,mar,Ukjent fylke,0,1
+2022,mar,Vestfold og Telemark,0,1
+2022,mar,Vestland,0,1
+2022,mar,Viken,0,1
+2023,mar,Agder,9,0
+2023,mar,Innlandet,0,3
+2023,mar,Møre og Romsdal,25,0
+2023,mar,Nordland,6,0
+2023,mar,Oslo,33,0
+2023,mar,Rogaland,20,0
+2023,mar,Totalt,286,0
+2023,mar,Troms og Finnmark,9,0
+2023,mar,Trøndelag,35,0
+2023,mar,Ukjent fylke,0,1
+2023,mar,Vestfold og Telemark,27,0
+2023,mar,Vestland,20,0
+2023,mar,Viken,99,0
+2022,apr,Agder,0,1
+2022,apr,Innlandet,0,1
+2022,apr,Møre og Romsdal,0,1
+2022,apr,Nordland,0,1
+2022,apr,Oslo,0,1
+2022,apr,Rogaland,0,1
+2022,apr,Totalt,0,1
+2022,apr,Troms og Finnmark,0,1
+2022,apr,Trøndelag,0,1
+2022,apr,Ukjent fylke,0,1
+2022,apr,Vestfold og Telemark,0,1
+2022,apr,Vestland,0,1
+2022,apr,Viken,0,1
+2023,apr,Agder,17,0
+2023,apr,Innlandet,0,3
+2023,apr,Møre og Romsdal,31,0
+2023,apr,Nordland,12,0
+2023,apr,Oslo,19,0
+2023,apr,Rogaland,17,0
+2023,apr,Totalt,254,0
+2023,apr,Troms og Finnmark,12,0
+2023,apr,Trøndelag,21,0
+2023,apr,Ukjent fylke,0,1
+2023,apr,Vestfold og Telemark,34,0
+2023,apr,Vestland,19,0
+2023,apr,Viken,70,0
+2022,mai,Agder,0,1
+2022,mai,Innlandet,0,1
+2022,mai,Møre og Romsdal,0,1
+2022,mai,Nordland,0,1
+2022,mai,Oslo,0,1
+2022,mai,Rogaland,0,1
+2022,mai,Totalt,0,1
+2022,mai,Troms og Finnmark,0,1
+2022,mai,Trøndelag,0,1
+2022,mai,Ukjent fylke,0,1
+2022,mai,Vestfold og Telemark,0,1
+2022,mai,Vestland,0,1
+2022,mai,Viken,0,1
+2023,mai,Agder,11,0
+2023,mai,Innlandet,5,0
+2023,mai,Møre og Romsdal,34,0
+2023,mai,Nordland,0,3
+2023,mai,Oslo,70,0
+2023,mai,Rogaland,39,0
+2023,mai,Totalt,417,0
+2023,mai,Troms og Finnmark,27,0
+2023,mai,Trøndelag,45,0
+2023,mai,Ukjent fylke,0,1
+2023,mai,Vestfold og Telemark,60,0
+2023,mai,Vestland,25,0
+2023,mai,Viken,98,0
+2022,jun,Agder,0,1
+2022,jun,Innlandet,0,1
+2022,jun,Møre og Romsdal,0,1
+2022,jun,Nordland,0,1
+2022,jun,Oslo,0,1
+2022,jun,Rogaland,0,1
+2022,jun,Totalt,0,1
+2022,jun,Troms og Finnmark,0,1
+2022,jun,Trøndelag,0,1
+2022,jun,Ukjent fylke,0,1
+2022,jun,Vestfold og Telemark,0,1
+2022,jun,Vestland,0,1
+2022,jun,Viken,0,1
+2023,jun,Agder,0,3
+2023,jun,Innlandet,0,1
+2023,jun,Møre og Romsdal,10,0
+2023,jun,Nordland,0,3
+2023,jun,Oslo,8,0
+2023,jun,Rogaland,17,0
+2023,jun,Totalt,140,0
+2023,jun,Troms og Finnmark,19,0
+2023,jun,Trøndelag,15,0
+2023,jun,Ukjent fylke,0,3
+2023,jun,Vestfold og Telemark,18,0
+2023,jun,Vestland,11,0
+2023,jun,Viken,33,0
+2022,jul,Agder,0,1
+2022,jul,Innlandet,0,1
+2022,jul,Møre og Romsdal,0,1
+2022,jul,Nordland,0,1
+2022,jul,Oslo,0,1
+2022,jul,Rogaland,0,1
+2022,jul,Totalt,0,1
+2022,jul,Troms og Finnmark,0,1
+2022,jul,Trøndelag,0,1
+2022,jul,Ukjent fylke,0,1
+2022,jul,Vestfold og Telemark,0,1
+2022,jul,Vestland,0,1
+2022,jul,Viken,0,1
+2023,jul,Agder,0,3
+2023,jul,Innlandet,0,1
+2023,jul,Møre og Romsdal,10,0
+2023,jul,Nordland,0,3
+2023,jul,Oslo,15,0
+2023,jul,Rogaland,0,3
+2023,jul,Totalt,80,0
+2023,jul,Troms og Finnmark,9,0
+2023,jul,Trøndelag,8,0
+2023,jul,Ukjent fylke,0,1
+2023,jul,Vestfold og Telemark,10,0
+2023,jul,Vestland,6,0
+2023,jul,Viken,15,0
+2022,aug,Agder,0,1
+2022,aug,Innlandet,0,1
+2022,aug,Møre og Romsdal,0,1
+2022,aug,Nordland,0,1
+2022,aug,Oslo,0,1
+2022,aug,Rogaland,0,1
+2022,aug,Totalt,0,1
+2022,aug,Troms og Finnmark,0,1
+2022,aug,Trøndelag,0,1
+2022,aug,Ukjent fylke,0,1
+2022,aug,Vestfold og Telemark,0,1
+2022,aug,Vestland,0,1
+2022,aug,Viken,0,1
+2023,aug,Agder,0,1
+2023,aug,Innlandet,0,1
+2023,aug,Møre og Romsdal,0,1
+2023,aug,Nordland,0,1
+2023,aug,Oslo,0,1
+2023,aug,Rogaland,0,1
+2023,aug,Totalt,0,1
+2023,aug,Troms og Finnmark,0,1
+2023,aug,Trøndelag,0,1
+2023,aug,Ukjent fylke,0,1
+2023,aug,Vestfold og Telemark,0,1
+2023,aug,Vestland,0,1
+2023,aug,Viken,0,1
+2022,sep,Agder,0,1
+2022,sep,Innlandet,0,1
+2022,sep,Møre og Romsdal,0,1
+2022,sep,Nordland,0,1
+2022,sep,Oslo,0,1
+2022,sep,Rogaland,0,1
+2022,sep,Totalt,0,1
+2022,sep,Troms og Finnmark,0,1
+2022,sep,Trøndelag,0,1
+2022,sep,Ukjent fylke,0,1
+2022,sep,Vestfold og Telemark,0,1
+2022,sep,Vestland,0,1
+2022,sep,Viken,0,1
+2023,sep,Agder,0,1
+2023,sep,Innlandet,0,1
+2023,sep,Møre og Romsdal,0,1
+2023,sep,Nordland,0,1
+2023,sep,Oslo,0,1
+2023,sep,Rogaland,0,1
+2023,sep,Totalt,0,1
+2023,sep,Troms og Finnmark,0,1
+2023,sep,Trøndelag,0,1
+2023,sep,Ukjent fylke,0,1
+2023,sep,Vestfold og Telemark,0,1
+2023,sep,Vestland,0,1
+2023,sep,Viken,0,1
+2022,okt,Agder,0,1
+2022,okt,Innlandet,0,1
+2022,okt,Møre og Romsdal,0,1
+2022,okt,Nordland,0,1
+2022,okt,Oslo,0,1
+2022,okt,Rogaland,0,1
+2022,okt,Totalt,0,3
+2022,okt,Troms og Finnmark,0,1
+2022,okt,Trøndelag,0,1
+2022,okt,Ukjent fylke,0,1
+2022,okt,Vestfold og Telemark,0,1
+2022,okt,Vestland,0,1
+2022,okt,Viken,0,3
+2023,okt,Agder,0,1
+2023,okt,Innlandet,0,1
+2023,okt,Møre og Romsdal,0,1
+2023,okt,Nordland,0,1
+2023,okt,Oslo,0,1
+2023,okt,Rogaland,0,1
+2023,okt,Totalt,0,1
+2023,okt,Troms og Finnmark,0,1
+2023,okt,Trøndelag,0,1
+2023,okt,Ukjent fylke,0,1
+2023,okt,Vestfold og Telemark,0,1
+2023,okt,Vestland,0,1
+2023,okt,Viken,0,1
+2022,nov,Agder,0,3
+2022,nov,Innlandet,0,3
+2022,nov,Møre og Romsdal,0,3
+2022,nov,Nordland,0,1
+2022,nov,Oslo,0,1
+2022,nov,Rogaland,0,1
+2022,nov,Totalt,58,0
+2022,nov,Troms og Finnmark,0,1
+2022,nov,Trøndelag,39,0
+2022,nov,Ukjent fylke,0,1
+2022,nov,Vestfold og Telemark,0,1
+2022,nov,Vestland,8,0
+2022,nov,Viken,6,0
+2023,nov,Agder,0,1
+2023,nov,Innlandet,0,1
+2023,nov,Møre og Romsdal,0,1
+2023,nov,Nordland,0,1
+2023,nov,Oslo,0,1
+2023,nov,Rogaland,0,1
+2023,nov,Totalt,0,1
+2023,nov,Troms og Finnmark,0,1
+2023,nov,Trøndelag,0,1
+2023,nov,Ukjent fylke,0,1
+2023,nov,Vestfold og Telemark,0,1
+2023,nov,Vestland,0,1
+2023,nov,Viken,0,1
+2022,des,Agder,60,0
+2022,des,Innlandet,12,0
+2022,des,Møre og Romsdal,149,0
+2022,des,Nordland,22,0
+2022,des,Oslo,32,0
+2022,des,Rogaland,64,0
+2022,des,Totalt,1336,0
+2022,des,Troms og Finnmark,98,0
+2022,des,Trøndelag,257,0
+2022,des,Ukjent fylke,0,3
+2022,des,Vestfold og Telemark,180,0
+2022,des,Vestland,79,0
+2022,des,Viken,382,0
+2023,des,Agder,0,1
+2023,des,Innlandet,0,1
+2023,des,Møre og Romsdal,0,1
+2023,des,Nordland,0,1
+2023,des,Oslo,0,1
+2023,des,Rogaland,0,1
+2023,des,Totalt,0,1
+2023,des,Troms og Finnmark,0,1
+2023,des,Trøndelag,0,1
+2023,des,Ukjent fylke,0,1
+2023,des,Vestfold og Telemark,0,1
+2023,des,Vestland,0,1
+2023,des,Viken,0,1

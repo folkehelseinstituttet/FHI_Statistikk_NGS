@@ -21,62 +21,62 @@
           "Title": "Måned",
           "Categories": [
             {
-              "Value": "1",
+              "Value": "jan",
               "Title": "Januar",
               "LevelName": "Måned"
             },
             {
-              "Value": "2",
+              "Value": "feb",
               "Title": "Februar",
               "LevelName": "Måned"
             },
             {
-              "Value": "3",
+              "Value": "mar",
               "Title": "Mars",
               "LevelName": "Måned"
             },
             {
-              "Value": "4",
+              "Value": "apr",
               "Title": "April",
               "LevelName": "Måned"
             },
             {
-              "Value": "5",
+              "Value": "mai",
               "Title": "Mai",
               "LevelName": "Måned"
             },
             {
-              "Value": "6",
+              "Value": "jun",
               "Title": "Juni",
               "LevelName": "Måned"
             },
             {
-              "Value": "7",
+              "Value": "jul",
               "Title": "Juli",
               "LevelName": "Måned"
             },
             {
-              "Value": "8",
+              "Value": "aug",
               "Title": "August",
               "LevelName": "Måned"
             },
             {
-              "Value": "9",
+              "Value": "sep",
               "Title": "September",
               "LevelName": "Måned"
             },
             {
-              "Value": "10",
+              "Value": "okt",
               "Title": "Oktober",
               "LevelName": "Måned"
             },
             {
-              "Value": "11",
+              "Value": "nov",
               "Title": "November",
               "LevelName": "Måned"
             },
             {
-              "Value": "12",
+              "Value": "des",
               "Title": "Desember",
               "LevelName": "Måned"
             }
@@ -142,6 +142,11 @@
               "LevelName":"Fylke"
             },
             {
+              "Value": "Ukjent fylke",
+              "Title": "Ukjent fylke",
+              "LevelName":"Fylke"
+            },
+            {
               "Value": "Totalt",
               "Title": "Alle fylker",
               "LevelName":"Fylke"
@@ -159,7 +164,7 @@
         {
           "Value": 0,
           "Title": "",
-          "Text": ""
+          "Text": "Verdi finnes i tabell"
         },
         {
           "Value": 1,
