@@ -9,6 +9,20 @@ month_numbers <- as.character(1:12)
 month_names   <- lubridate::month(1:12, label = T, abbr = T, locale = "Norwegian_Norway") 
 years         <- c("2023")
 
+# Create variables to use in filtering
+current_year <- year(Sys.Date())
+current_month <- month(Sys.Date())
+current_month_label <- month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
+current_yearmonth <- paste(current_year, current_month_label, sep = "-")
+  
+if (current_month == 12) {
+  previous_month <- 1
+} else {
+  previous_month <- current_month - 1
+}
+previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+previous_yearmonth <- paste(current_year, previous_month_label, sep = "-")
+
 # Create all possible combinations of month and year 
 final_data <- crossing(month_names, years) %>% 
   rename(
@@ -27,21 +41,58 @@ con <- odbc::dbConnect(odbc::odbc(),
                  Server = "sql-bn-covid19",
                  Database = "BN_Covid19")
 
-BN <- dplyr::tbl(con, "ENTRYTABLE") %>% 
-  # Keep all columns
-  #select(KEY, REKVNR, PROVE_TATT, FYLKENAVN, MATERIALE, PROSENTDEKNING_GENOM, DEKNING_NANOPORE, SEKV_OPPSETT_NANOPORE, DEKNING_NANOPORE, SEKV_OPPSETT_SWIFT7,
-  #       SEQUENCEID_NANO29, SEQUENCEID_SWIFT, COVERAGE_BREADTH_SWIFT, GISAID_PLATFORM, GISAID_EPI_ISL, GENOTYPE_SVART_I_LABWARE, COVERAGE_BREATH_EKSTERNE,
-  #       SAMPLE_CATEGORY, INNSENDER, COVERAGE_DEPTH_SWIFT, COVARAGE_DEPTH_NANO, RES_CDC_INFA_RX, RES_CDC_INFB_CT, MELDT_SMITTESPORING, PANGOLIN_NOM,
-  #       ENA_RUN, ENA_BIOSAMPLE, GISAID_ISOLAT_NAVN) %>%
-  rename("Dekning_Artic" = PROSENTDEKNING_GENOM,
-         "Dekning_Swift" = COVERAGE_BREADTH_SWIFT,
-         "Dekning_Nano" = DEKNING_NANOPORE,
-         "Dekning_Eksterne" = COVERAGE_BREATH_EKSTERNE) %>% 
-  # Collect will actually retrieve the data and store it as a local tibble
+# Query the ENTRYTABLE table to extract relevant sequencing data
+allvariants <- tbl(con, "ENTRYTABLE") %>%
+  select(
+    KEY,
+    PROVE_TATT,
+    PROSENTDEKNING_GENOM,
+    DEKNING_NANOPORE,
+    COVERAGE_BREADTH_SWIFT,
+    COVERAGE_BREATH_EKSTERNE,
+    PANGOLIN_NOM,
+    FULL_PANGO_LINEAGE,
+    
+  ) %>%
+  rename(
+    "Dekning_Artic" = PROSENTDEKNING_GENOM,
+    "Dekning_Swift" = COVERAGE_BREADTH_SWIFT,
+    "Dekning_Eksterne" = COVERAGE_BREATH_EKSTERNE,
+    "Dekning_Nano" = DEKNING_NANOPORE,
+  ) %>%
   collect()
 
+# Convert all column values to UTF-8 encoding
+allvariants[] <- lapply(allvariants, function(x)
+  iconv(x, from = "ISO-8859-1", to = "UTF-8"))
+
+# Filter out low quality samples
+allvariants_v <- allvariants  %>%
+  filter((Dekning_Swift >= 70) |
+           (Dekning_Artic >= 70) |
+           (Dekning_Nano >= 70)  |
+           (Dekning_Eksterne >= 70)
+  ) %>%
+  filter (PANGOLIN_NOM != "#BESTILT#") %>%
+  filter (PANGOLIN_NOM != "Inkonklusiv") %>%
+  filter (PANGOLIN_NOM != "inkonklusiv") %>%
+  filter (PANGOLIN_NOM != "Se kommentar") %>%
+  filter (PANGOLIN_NOM != "Seekom") %>%
+  filter (PANGOLIN_NOM != "") %>%
+  filter (PANGOLIN_NOM != "Failed") %>%
+  filter (PANGOLIN_NOM != "failed") %>%
+  filter (PANGOLIN_NOM != "Unassigned")%>%
+  filter (PANGOLIN_NOM != "NA") %>%
+  filter(PROVE_TATT != "")
+
+# Clean up
+rm(allvariants)
+
+# Close connection 
+closeAllConnections()
+
 # Convert comma to dot in the coverage
-BN <- BN %>% 
+allvariants_v <- allvariants_v %>% 
   # Replace a few double commas
   mutate(Dekning_Nano = str_replace(Dekning_Nano, ",,", ",")) %>% 
   # Change comma to decimal for the coverage
@@ -51,25 +102,17 @@ BN <- BN %>%
          Dekning_Eksterne = str_replace(Dekning_Eksterne, ",", "."))
 
 # Filter the data
-tmp <- BN %>% 
+tmp <- allvariants_v %>% 
   # Fjerne evt positiv controll
   filter(str_detect(KEY, "pos", negate = TRUE)) %>%
-  # Keep samples with a valid Pango
-  filter(!is.na(PANGOLIN_NOM)) %>%
-  # Remove a few weird Pangos
-  filter(str_detect(PANGOLIN_NOM, "BESTILT", negate = T)) %>% 
-  filter(str_detect(PANGOLIN_NOM, "konklusiv", negate = T)) %>% 
-  filter(str_detect(PANGOLIN_NOM, "Unassigned", negate = T)) %>% 
-  filter(str_detect(PANGOLIN_NOM, "kommentar", negate = T)) %>% 
-  filter(PANGOLIN_NOM != "") %>% # Remove empty string for Pango
   # Fix date format
   mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
-  # Keep samples from 2023 only
-  filter(PROVE_TATT > "2022-12-31") %>% 
+  # Keep samples from current year only
+  filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
   # select relevant columns
   select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE)
 
-# Create year and month columnd
+# Create year and month column
 tmp <- tmp %>% 
   mutate(YEAR = year(PROVE_TATT),
          MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
@@ -91,14 +134,54 @@ freqs <- tmp %>%
   arrange(desc(Percent))
   
 # Pull out current and previous month
-freqs %>% 
-  filter(YEARMONTH == "2023-aug" | YEARMONTH == "2023-jul") %>% 
-  select(PANGOLIN_NOM, YEARMONTH, Percent) %>% 
-  pivot_wider(names_from = YEARMONTH, values_from = Percent) %>% 
-  arrange(desc(`2023-aug`)) %>% 
+data <- freqs %>% 
+  filter(YEARMONTH == current_yearmonth | YEARMONTH == previous_yearmonth) %>% 
+  select(n, PANGOLIN_NOM, YEARMONTH, Percent) %>% 
+  pivot_wider(names_from = YEARMONTH, values_from = c(n, Percent)) %>% 
+  rename("CURR_MONTH_ANTALL" = paste0("n_", current_yearmonth),
+         "PREV_MONTH_ANTALL" = paste0("n_", previous_yearmonth),
+         "CURR_MONTH_PERC" = paste0("Percent_", current_yearmonth),
+         "PREV_MONTH_PERC" = paste0("Percent_", previous_yearmonth)) %>% 
+  arrange(desc(CURR_MONTH_PERC)) %>% 
   # Calculate percent change
-  mutate(change = (`2023-jul` - `2023-aug`) / `2023-jul` * 100)
+  mutate(PERC_CHANGE = format((CURR_MONTH_PERC - PREV_MONTH_PERC) / PREV_MONTH_PERC * 100, digits = 2)) %>% 
+  head(n=10) %>% 
+  # Add n to percentage column in brackets
+  mutate("CURR_MONTH_ANTALL" = paste0('(', CURR_MONTH_ANTALL, ')'),
+         "PREV_MONTH_ANTALL" = paste0('(', PREV_MONTH_ANTALL, ')')) %>% 
+  unite("CURR_MONTH_PERC", c(CURR_MONTH_PERC, CURR_MONTH_ANTALL), sep = " ") %>%
+  unite("PREV_MONTH_PERC", c(PREV_MONTH_PERC, PREV_MONTH_ANTALL), sep = " ")
+  
 
+#%>% 
+  # clean up column names. 
+#  rename(!!current_yearmonth := CURR_MONTH_PERC,
+#         !!previous_yearmonth := PREV_MONTH_PERC)
+  
+# Jeg må ha tabellen i long format
+final_data <- data %>% 
+  mutate(PERC_CHANGE = as.character(PERC_CHANGE)) %>% 
+  pivot_longer(!PANGOLIN_NOM, names_to = "CATEGORY", values_to = "ANTALL") %>% 
+  # Add flags for FHI Statistikk
+  add_column("SPVFLAGG" = 0) %>%  # 0 er default og betyr at verdien finnes i tabellen
+  mutate(SPVFLAGG = case_when(
+    str_detect(ANTALL, "NA") ~ 1, # Sett SPVFLAGG til 1 hvis NA. Altså at vi ikke har samlet inn data for denne perioden
+    #ANTALL < 5 ~ 3, # Vi setter alle verdier lavere enn 5 til 0
+    .default = 0
+  )) %>% 
+  # Endre NA til null
+  mutate(ANTALL = str_replace_all(ANTALL, "NA", "0"))
+
+# Write as csv
+write_csv(final_data, 
+          file = paste0("data/SC2_samples/", Sys.Date(), "_variants_per_month.csv"))
+
+  
+# Jeg bør etterhvert generere en kategorifil automatisk? Det er vel bare variantene som vil endres?
+# Prepare to make the categories
+variants <- final_data %>% distinct(PANGOLIN_NOM) %>% pull(PANGOLIN_NOM)
+categories <- final_data %>% distinct(CATEGORY) %>% pull(CATEGORY)
+measure_type <- "ANTALL" 
 
 # DELETE ------------------------------------------------------------------
 

@@ -1,0 +1,114 @@
+{
+    "Dimensions": [
+        {
+          "Value": "PANGOLIN_NOM",
+          "Title": "Variant",
+          "Categories": [
+            {
+              "Value": "EG.5.1.1",
+              "Title": "EG.5.1.1",
+                "LevelName": "Variant"
+            },
+            {
+              "Value": "EG.5.1.3",
+              "Title": "EG.5.1.3",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.1.16",
+              "Title": "XBB.1.16",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "EG.6.1",
+              "Title": "EG.6.1",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.2.3",
+              "Title": "XBB.2.3",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "GE.1",
+              "Title": "GE.1",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "GJ.1.2",
+              "Title": "GJ.1.2",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "BQ.1.2.2",
+              "Title": "BQ.1.2.2",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "FW.1",
+              "Title": "FW.1",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.1.16.15",
+              "Title": "XBB.1.16.15",
+              "LevelName": "Variant"
+            }
+          ]
+        },
+        {
+          "Value": "CATEGORY",
+          "Title": "Kategori",
+          "Categories": [
+            {
+              "Value": "CURR_MONTH_PERC",
+              "Title": "Nåværende måned %",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "PREV_MONTH_PERC",
+              "Title": "Forrige måned %",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "PERC_CHANGE",
+              "Title": "% endring",
+              "LevelName": "Kategori"
+            }
+          ]
+        }
+    ],
+    "MeasureTypes": [
+        {
+          "Value": "ANTALL",
+          "Title": "Tall"
+        }
+      ],
+      "Flags": [
+        {
+          "Value": 0,
+          "Title": "",
+          "Text": "Verdi finnes i tabell"
+        },
+        {
+          "Value": 1,
+          "Title": "..",
+          "Text": "Manglende data"
+        },
+        {
+          "Value": 2,
+          "Title": ".",
+          "Text": "Lar seg ikke beregne"
+        },
+        {
+          "Value": 3,
+          "Title": ":",
+          "Text": "Anonymisert"
+        },
+        {
+          "Value": 4,
+          "Title": "-",
+          "Text": "Data ikke tilgjengelig"
+        }
+      ]
+}
