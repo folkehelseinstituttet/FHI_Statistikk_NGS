@@ -25,33 +25,33 @@
               "LevelName": "Variant"
             },
             {
-              "Value": "XBB.2.3",
-              "Title": "XBB.2.3",
-              "LevelName": "Variant"
-            },
-            {
               "Value": "GE.1",
               "Title": "GE.1",
               "LevelName": "Variant"
             },
             {
-              "Value": "GJ.1.2",
-              "Title": "GJ.1.2",
-              "LevelName": "Variant"
-            },
-            {
-              "Value": "BQ.1.2.2",
-              "Title": "BQ.1.2.2",
-              "LevelName": "Variant"
-            },
-            {
-              "Value": "FW.1",
-              "Title": "FW.1",
-              "LevelName": "Variant"
-            },
-            {
               "Value": "XBB.1.16.15",
               "Title": "XBB.1.16.15",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.1.16.12",
+              "Title": "XBB.1.16.12",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.1.16.6",
+              "Title": "XBB.1.16.6",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "XBB.1.42.1",
+              "Title": "XBB.1.42.1",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "FE.1.1",
+              "Title": "FE.1.1",
               "LevelName": "Variant"
             }
           ]
@@ -60,6 +60,16 @@
           "Value": "CATEGORY",
           "Title": "Kategori",
           "Categories": [
+            {
+              "Value": "CURR_MONTH_ANTALL",
+              "Title": "Nåværende måned antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "PREV_MONTH_ANTALL",
+              "Title": "Forrige måned antall",
+              "LevelName": "Kategori"
+            },
             {
               "Value": "CURR_MONTH_PERC",
               "Title": "Nåværende måned %",
@@ -81,7 +91,7 @@
     "MeasureTypes": [
         {
           "Value": "ANTALL",
-          "Title": "Tall"
+          "Title": "Antall"
         }
       ],
       "Flags": [
