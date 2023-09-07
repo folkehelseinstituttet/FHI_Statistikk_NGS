@@ -85,6 +85,57 @@ allvariants_v <- allvariants  %>%
   filter (PANGOLIN_NOM != "NA") %>%
   filter(PROVE_TATT != "")
 
+######################   Collapsing Pangolins  ##################################
+# https://www.who.int/activities/tracking-SARS-CoV-2-variants go here to update the list 
+# Add a Collapsed pango column to the dataset based on the long Pangolin lineage 
+
+# https://raw.githubusercontent.com/cov-lineages/pango-designation/master/lineage_notes.txt
+
+allvariants_v <- allvariants_v %>%
+  mutate(Collapsed_pango = case_when(
+    FULL_PANGO_LINEAGE == "B.1.1.529.2.86" ~ "BA.2.86.X",
+    FULL_PANGO_LINEAGE == "XBB.1.9.2.5.1" ~ "EG.5.1.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.16" ~ "XBB.1.16.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].2.3" ~ "XBB.2.3.X",
+    FULL_PANGO_LINEAGE == "XBB.2.3" ~ "XBB.2.3.X",
+    FULL_PANGO_LINEAGE == "XBB.1.9.2.5" ~ "EG.5.X",
+    FULL_PANGO_LINEAGE == "XBB.1.16" ~ "XBB.1.16.X",
+    FULL_PANGO_LINEAGE == "XBB.1.9.1" ~ "XBB.1.9.1.X",
+    FULL_PANGO_LINEAGE == "XBB.1.9.2" ~ "XBB.1.9.2.X",
+    FULL_PANGO_LINEAGE == "XBB.1.5" ~ "XBB.1.5.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9.1" ~ "XBB.1.9.1.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9.2" ~ "XBB.1.9.2.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.2.75.3.4.1.1.1.1" ~ "CH.1.1.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.5" ~ "XBB.1.5.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9" ~ "XBB.1.9.X",
+    FULL_PANGO_LINEAGE == "XBB.1.9" ~ "XBB.1.9.X",
+    FULL_PANGO_LINEAGE == "XBB." ~ "XBB.X",
+    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1" ~ "XBB.X",
+    grepl("^\\[", FULL_PANGO_LINEAGE) ~ "Andre rekombinanter",
+    FULL_PANGO_LINEAGE == "X" ~ "Andre rekombinanter",
+    FULL_PANGO_LINEAGE == "B.1.1.529.5.3.1.1.1.1.1" ~ "BQ.1.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.2.75" ~ "BA.2.75.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.5" ~ "BA.5.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.4" ~ "BA.4.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.3" ~ "BA.3.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.2" ~ "BA.2.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529.1" ~ "BA.1.X",
+    FULL_PANGO_LINEAGE == "B.1.1.529" ~ "B.1.1.529",
+    FULL_PANGO_LINEAGE == "B.1.617" ~ "Delta",
+    FULL_PANGO_LINEAGE == "B.1.1.7" ~ "Alpha",
+    FULL_PANGO_LINEAGE == "B.1.351" ~ "Beta",
+    FULL_PANGO_LINEAGE == "B.1.1.28.1" ~ "Gamma",
+    FULL_PANGO_LINEAGE == "B.1.427" | FULL_PANGO_LINEAGE == "B.1.429" ~ "Epsilon",
+    FULL_PANGO_LINEAGE == "B.1.1.28.2" ~ "Zeta",
+    FULL_PANGO_LINEAGE == "B.1.525" ~ "Eta",
+    FULL_PANGO_LINEAGE == "B.1.1.28.3" ~ "Theta",
+    FULL_PANGO_LINEAGE == "B.1.526" ~ "Iota",
+    FULL_PANGO_LINEAGE == "B.1.617.1" ~ "Kappa",
+    FULL_PANGO_LINEAGE == "B.1.1.1.37.1" ~ "Lambda",
+    FULL_PANGO_LINEAGE == "B.1.621" ~ "Mu",
+    TRUE ~ "Andre SARS CoV 2"
+  ))
+
 # Clean up
 rm(allvariants)
 
@@ -110,7 +161,7 @@ tmp <- allvariants_v %>%
   # Keep samples from current year only
   filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
   # select relevant columns
-  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE)
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango)
 
 # Create year and month column
 tmp <- tmp %>% 
@@ -121,6 +172,9 @@ tmp <- tmp %>%
   
 
 # Calculate variant frequency ---------------------------------------------
+
+# Uncomment if using the Collapsed pangos
+#tmp <- tmp %>% select(-PANGOLIN_NOM) %>% rename("PANGOLIN_NOM" = Collapsed_pango)
 
 freqs <- tmp %>% 
   # Count number of lineages per month per year
@@ -145,12 +199,12 @@ data <- freqs %>%
   arrange(desc(CURR_MONTH_PERC)) %>% 
   # Calculate percent change
   mutate(PERC_CHANGE = format((CURR_MONTH_PERC - PREV_MONTH_PERC) / PREV_MONTH_PERC * 100, digits = 2)) %>% 
-  head(n=10) %>% 
+  head(n=10) 
   # Add n to percentage column in brackets
-  mutate("CURR_MONTH_ANTALL" = paste0('(', CURR_MONTH_ANTALL, ')'),
-         "PREV_MONTH_ANTALL" = paste0('(', PREV_MONTH_ANTALL, ')')) %>% 
-  unite("CURR_MONTH_PERC", c(CURR_MONTH_PERC, CURR_MONTH_ANTALL), sep = " ") %>%
-  unite("PREV_MONTH_PERC", c(PREV_MONTH_PERC, PREV_MONTH_ANTALL), sep = " ")
+  #mutate("CURR_MONTH_ANTALL" = paste0('(', CURR_MONTH_ANTALL, ')'),
+  #       "PREV_MONTH_ANTALL" = paste0('(', PREV_MONTH_ANTALL, ')')) %>% 
+  #unite("CURR_MONTH_PERC", c(CURR_MONTH_PERC, CURR_MONTH_ANTALL), sep = " ") %>%
+  #unite("PREV_MONTH_PERC", c(PREV_MONTH_PERC, PREV_MONTH_ANTALL), sep = " ")
   
 
 #%>% 
@@ -160,17 +214,19 @@ data <- freqs %>%
   
 # Jeg må ha tabellen i long format
 final_data <- data %>% 
-  mutate(PERC_CHANGE = as.character(PERC_CHANGE)) %>% 
-  pivot_longer(!PANGOLIN_NOM, names_to = "CATEGORY", values_to = "ANTALL") %>% 
+  mutate(PERC_CHANGE = as.numeric(PERC_CHANGE)) %>% 
+  pivot_longer(!PANGOLIN_NOM, names_to = "CATEGORY", values_to = "ANTALL") %>%  
   # Add flags for FHI Statistikk
   add_column("SPVFLAGG" = 0) %>%  # 0 er default og betyr at verdien finnes i tabellen
   mutate(SPVFLAGG = case_when(
-    str_detect(ANTALL, "NA") ~ 1, # Sett SPVFLAGG til 1 hvis NA. Altså at vi ikke har samlet inn data for denne perioden
+    is.na(ANTALL) & str_detect(CATEGORY, "PERC") ~ 2, # Sett SPVFLAGG til 2 hvis NA for prosenter. Lar seg ikke beregne.
+    is.na(ANTALL) & str_detect(CATEGORY, "ANTALL") ~ 1, # Sett SPVFLAGG til 1 hvis NA for antall. Altså at vi ikke har samlet inn data for denne perioden
     #ANTALL < 5 ~ 3, # Vi setter alle verdier lavere enn 5 til 0
     .default = 0
   )) %>% 
   # Endre NA til null
-  mutate(ANTALL = str_replace_all(ANTALL, "NA", "0"))
+  mutate(ANTALL = replace_na(ANTALL, 0)) 
+  
 
 # Write as csv
 write_csv(final_data, 
@@ -178,10 +234,155 @@ write_csv(final_data,
 
   
 # Jeg bør etterhvert generere en kategorifil automatisk? Det er vel bare variantene som vil endres?
+# Bør også endre visningen av nåværende og forrige måned til den faktiske måneden
 # Prepare to make the categories
 variants <- final_data %>% distinct(PANGOLIN_NOM) %>% pull(PANGOLIN_NOM)
+variants_title <- variants
+v_levelName <- "Variant"
+
 categories <- final_data %>% distinct(CATEGORY) %>% pull(CATEGORY)
+categories_title <- c("Nåværende måned antall", "Forrige måned antall", "Nåværende måned %", "Forrige måned %", "% endring")
+c_levelName <- "Kategori"
+
 measure_type <- "ANTALL" 
+measure_type_title <- "Antall"
+
+flags <- 0:4
+flags_title <- c("", "..", ".", ":", "-")
+flags_text <- c("Verdi finnes i tabell", "Manglende data", "Lar seg ikke beregne", "Anonymisert", "Data ikke tilgjengelig")
+
+# Tester å lage listen med Pangolins
+variants_list <- vector("list", length = length(variants))
+# Populere listen
+for (i in length(variants_list)) {
+  variants_list[[i]] <- "TEST"
+}
+
+# Create a list
+category_file_list <- list(
+  "Dimensions" = list(
+    list("Value" = "PANGOLIN_NOM", 
+         "Title" = "Variant",
+         "Categories" = list(
+           list(
+             "Value" = "EG.5.1.1",
+             "Title" = "EG.5.1.1",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "EG.5.1.3",
+             "Title" = "EG.5.1.3",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "XBB.1.16",
+             "Title" = "XBB.1.16",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "XBB.1.16.12",
+             "Title" = "XBB.1.16.12",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "EG.6.1",
+             "Title" = "EG.6.1",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "FE.1.1",
+             "Title" = "FE.1.1",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "XBB.1.16.6",
+             "Title" = "XBB.1.16.6",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "GE.1",
+             "Title" = "GE.1",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "XBB.1.16.15",
+             "Title" = "XBB.1.16.15",
+             "LevelName" = "Variant"
+           ),
+           list(
+             "Value" = "XBB.1.42.1",
+             "Title" = "XBB.1.42.1",
+             "LevelName" = "Variant"
+           )
+         )),
+    list(
+      "Value" = "CATEGORY",
+      "Title" = "Kategori",
+      "Categories" = list(
+        list(
+          "Value" = "CURR_MONTH_ANTALL",
+          "Title" = "Nåværende måned antall",
+          "LevelName" = "Kategori"
+        ),
+        list(
+          "Value" = "PREV_MONTH_ANTALL",
+          "Title" = "Forrige måned antall",
+          "LevelName" = "Kategori"
+        ),
+        list(
+          "Value" = "CURR_MONTH_PERC",
+          "Title" = "Nåværende måned %",
+          "LevelName" = "Kategori"
+        ),
+        list(
+          "Value" = "PREV_MONTH_PERC",
+          "Title" = "Forrige måned %",
+          "LevelName" = "Kategori"
+        ),
+        list(
+          "Value" = "PERC_CHANGE",
+          "Title" = "% endring",
+          "LevelName" = "Kategori"
+        )
+      )
+    )),
+  "MeasureTypes" = list(
+    list(
+      "Value" = "ANTALL",
+      "Title" = "Antall"
+    )
+  ),
+  "Flags" = list(
+    list(
+      "Value" = 0,
+      "Title" = "",
+      "Text" = "Verdi finnes i tabell"
+    ),
+    list(
+      "Value" = 1,
+      "Title" = "..",
+      "Text" = "Manglende data"
+    ),
+    list(
+      "Value" = 2,
+      "Title" = ".",
+      "Text" = "Lar seg ikke beregne"
+    ),
+    list(
+      "Value" = 3,
+      "Title" = ":",
+      "Text" = "Anonymisert"
+    ),
+    list(
+      "Value" = 4,
+      "Title" = "-",
+      "Text" = "Data ikke tilgjengelig"
+    )
+  )
+)
+
+
+jsonlite::write_json(category_file_list, "/home/jonr/Prosjekter/NIPH_NGS_vis/data/script_test.json")
 
 # DELETE ------------------------------------------------------------------
 
