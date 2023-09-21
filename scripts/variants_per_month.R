@@ -2,7 +2,10 @@ library(tidyverse)
 library(lubridate)
 
 
-# Set up data structures --------------------------------------------------
+# Top 10 variants ---------------------------------------------------------
+
+
+# Set up data structures
 
 # Create the data structure that will be filled with values. Using strings only to get factors later in crossing()
 month_numbers <- as.character(1:12)
@@ -15,13 +18,17 @@ current_month <- month(Sys.Date())
 current_month_label <- month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
 current_yearmonth <- paste(current_year, current_month_label, sep = "-")
   
-if (current_month == 12) {
-  previous_month <- 1
+if (current_month == 1) {
+  previous_month <- 12
+  previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_year <- current_year-1
+  previous_yearmonth <- paste(previous_year, previous_month_label, sep = "-")
 } else {
   previous_month <- current_month - 1
+  previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_yearmonth <- paste(current_year, previous_month_label, sep = "-")
 }
-previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
-previous_yearmonth <- paste(current_year, previous_month_label, sep = "-")
+
 
 # Create all possible combinations of month and year 
 final_data <- crossing(month_names, years) %>% 
@@ -34,7 +41,7 @@ final_data <- crossing(month_names, years) %>%
   mutate(YEARMONTH = as.factor(YEARMONTH))
 
 
-# Get data from BN. Needs to be changed from Andreas ----------------------
+# Get data from BN. Needs to be changed from Andreas
 
 con <- odbc::dbConnect(odbc::odbc(),
                  Driver = "SQL Server",
@@ -85,7 +92,7 @@ allvariants_v <- allvariants  %>%
   filter (PANGOLIN_NOM != "NA") %>%
   filter(PROVE_TATT != "")
 
-######################   Collapsing Pangolins  ##################################
+# Collapsing Pangolins
 # https://www.who.int/activities/tracking-SARS-CoV-2-variants go here to update the list 
 # Add a Collapsed pango column to the dataset based on the long Pangolin lineage 
 
@@ -171,7 +178,7 @@ tmp <- tmp %>%
   mutate(YEARMONTH = factor(YEARMONTH))
   
 
-# Calculate variant frequency ---------------------------------------------
+# Calculate variant frequency
 
 # Uncomment if using the Collapsed pangos
 #tmp <- tmp %>% select(-PANGOLIN_NOM) %>% rename("PANGOLIN_NOM" = Collapsed_pango)
@@ -226,7 +233,6 @@ final_data <- data %>%
   )) %>% 
   # Endre NA til null
   mutate(ANTALL = replace_na(ANTALL, 0)) 
-  
 
 # Write as csv
 write_csv(final_data, 
@@ -258,7 +264,7 @@ for (i in length(variants_list)) {
   variants_list[[i]] <- "TEST"
 }
 
-# Create a list
+# Hardcoded category list
 category_file_list <- list(
   "Dimensions" = list(
     list("Value" = "PANGOLIN_NOM", 
@@ -383,6 +389,176 @@ category_file_list <- list(
 
 
 jsonlite::write_json(category_file_list, "/home/jonr/Prosjekter/NIPH_NGS_vis/data/script_test.json")
+
+
+# Variants of Interest ----------------------------------------------------
+
+# Define months of interest
+current_year <- year(Sys.Date())
+current_month <- month(Sys.Date())
+current_month_label <- month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
+current_yearmonth <- paste(current_year, current_month_label, sep = "-")
+if (current_month == 1) {
+  previous_month             <- 12
+  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_year              <- current_year-1
+  previous_yearmonth         <- paste(previous_year, previous_month_label, sep = "-")
+  previous_two_month         <- 11
+  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_yearmonth     <- paste(previous_year, previous_two_month_label, sep = "-")
+  previous_three_month       <- 10
+  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
+} else if (current_month == 2) {
+  previous_month             <- 1
+  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
+  previous_year              <- current_year-1
+  previous_two_month         <- 12
+  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_yearmonth     <- paste(previous_year, previous_two_month_label, sep = "-")
+  previous_three_month       <- 11
+  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
+} else if (current_month == 3) {
+  previous_month             <- 2
+  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
+  previous_two_month         <- 1
+  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_yearmonth     <- paste(current_year, previous_two_month_label, sep = "-")
+  previous_year              <- current_year-1
+  previous_three_month       <- 12
+  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
+} else {
+  previous_month             <- current_month - 1
+  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
+  previous_two_month         <- current_month - 2
+  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_yearmonth     <- paste(current_year, previous_two_month_label, sep = "-")
+  previous_three_month       <- current_month - 3
+  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_yearmonth   <- paste(current_year, previous_three_month_label, sep = "-")
+}
+
+# Filter the data
+tmp <- allvariants_v %>% 
+  # Fjerne evt positiv controll
+  filter(str_detect(KEY, "pos", negate = TRUE)) %>%
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # Keep samples from current year only
+  #filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
+  # Extract variants of interest
+  filter(str_detect(PANGOLIN_NOM, "^XBB\\.1\\.5\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.16\\.*") | str_detect(PANGOLIN_NOM, "^EG\\.5\\.*")) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango) %>% 
+  # Create short names for the variants
+  mutate(PANGO_SHORT = case_when(
+    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.5") ~ "XBB.1.5",
+    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.16") ~ "XBB.1.16",
+    str_detect(PANGOLIN_NOM, "^EG\\.5") ~ "EG.5"
+  )) 
+
+# Get total observations for each VOI
+xbb1.5_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.5")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.16_tot  <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.16") %>% add_column("CATEGORY" = "TOTAL_OBS")
+eg.5_tot     <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "EG.5")     %>% add_column("CATEGORY" = "TOTAL_OBS")
+
+# Count per month of interest
+pr_month <- tmp %>% 
+  # Create year and month column
+  mutate(YEAR = year(PROVE_TATT),
+         MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
+  unite("YEARMONTH", c(YEAR, MONTH), sep = "-", remove = FALSE) %>% 
+  mutate(YEARMONTH = factor(YEARMONTH)) %>% 
+  # Filter out months of interest
+  filter(YEARMONTH == current_yearmonth | YEARMONTH == previous_yearmonth | YEARMONTH == previous_two_yearmonth | YEARMONTH == previous_three_yearmonth) %>% 
+  # Count VOI's per month
+  count(YEARMONTH, PANGO_SHORT, name = "ANTALL") %>% 
+  # Rename YEARMONTH to CATEGORY for joining with total observations
+  rename("CATEGORY" = YEARMONTH)
+
+# Join the data
+final_data <- bind_rows(
+  xbb1.5_tot,
+  xbb1.16_tot,
+  eg.5_tot,
+  pr_month
+  ) %>% 
+  # Add flags for FHI Statistikk
+  add_column("SPVFLAGG" = 0) # 0 er default og betyr at verdien finnes i tabellen
+
+# Write as csv
+write_csv(final_data, 
+          file = paste0("data/SC2_samples/", Sys.Date(), "_variants_of_interest.csv"))
+
+
+
+# Variants under monitoring -----------------------------------------------
+
+# Filter the data
+tmp <- allvariants_v %>% 
+  # Fjerne evt positiv controll
+  filter(str_detect(KEY, "pos", negate = TRUE)) %>%
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # Keep samples from current year only
+  #filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
+  # Extract variants of interest
+  filter(str_detect(PANGOLIN_NOM, "^BA\\.2\\.75\\.*") | str_detect(PANGOLIN_NOM, "^CH\\.1\\.1\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.1\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.2\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.2\\.3\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.2\\.86\\.*")) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango) %>% 
+  # Create short names for the variants
+  mutate(PANGO_SHORT = case_when(
+    str_detect(PANGOLIN_NOM, "^BA\\.2\\.75")     ~ "BA.2.75",
+    str_detect(PANGOLIN_NOM, "^CH\\.1\\.1")      ~ "CH.1.1",
+    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.1") ~ "XBB.1.9.1",
+    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.2") ~ "XBB.1.9.2",
+    str_detect(PANGOLIN_NOM, "^XBB\\.2\\.3")     ~ "XBB.2.3",
+    str_detect(PANGOLIN_NOM, "^XBB\\.2\\.86")    ~ "XBB.2.86"
+  )) 
+
+# Get total observations for each VOI
+ba2.75_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "BA.2.75")   %>% add_column("CATEGORY" = "TOTAL_OBS")
+ch1.1_tot    <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "CH.1.1")    %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.9.1_tot <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.9.1") %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.9.2_tot <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.9.2") %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb2.3_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.2.3")   %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb2.86_tot  <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.2.86")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+
+# Count per month of interest
+pr_month <- tmp %>% 
+  # Create year and month column
+  mutate(YEAR = year(PROVE_TATT),
+         MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
+  unite("YEARMONTH", c(YEAR, MONTH), sep = "-", remove = FALSE) %>% 
+  mutate(YEARMONTH = factor(YEARMONTH)) %>% 
+  # Filter out months of interest
+  filter(YEARMONTH == current_yearmonth | YEARMONTH == previous_yearmonth | YEARMONTH == previous_two_yearmonth | YEARMONTH == previous_three_yearmonth) %>% 
+  # Count VOI's per month
+  count(YEARMONTH, PANGO_SHORT, name = "ANTALL") %>% 
+  # Rename YEARMONTH to CATEGORY for joining with total observations
+  rename("CATEGORY" = YEARMONTH)
+
+# Join the data
+final_data <- bind_rows(
+  ba2.75_tot,
+  ch1.1_tot,
+  xbb1.9.1_tot,
+  xbb1.9.2_tot,
+  xbb2.3_tot,
+  xbb2.86_tot,
+  pr_month
+) %>% 
+  # Add flags for FHI Statistikk
+  add_column("SPVFLAGG" = 0) # 0 er default og betyr at verdien finnes i tabellen
+
+# Write as csv
+write_csv(final_data, 
+          file = paste0("data/SC2_samples/", Sys.Date(), "_variants_under_monitoring.csv"))
 
 # DELETE ------------------------------------------------------------------
 
