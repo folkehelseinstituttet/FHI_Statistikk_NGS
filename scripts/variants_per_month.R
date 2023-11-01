@@ -203,7 +203,7 @@ data <- freqs %>%
          "PREV_MONTH_ANTALL" = paste0("n_", previous_yearmonth),
          "CURR_MONTH_PERC" = paste0("Percent_", current_yearmonth),
          "PREV_MONTH_PERC" = paste0("Percent_", previous_yearmonth)) %>% 
-  arrange(desc(CURR_MONTH_PERC)) %>% 
+  arrange(desc(CURR_MONTH_PERC)) %>% # Sorterer etter høyest andel inneværende måned. Altså topp 10 inneværende måned 
   # Calculate percent change
   mutate(PERC_CHANGE = format((CURR_MONTH_PERC - PREV_MONTH_PERC) / PREV_MONTH_PERC * 100, digits = 2)) %>% 
   head(n=10) 
