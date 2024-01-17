@@ -1,0 +1,94 @@
+{
+    "Dimensions": [
+        {
+          "Value": "PANGO_SHORT",
+          "Title": "Variant under overvåkning",
+          "Categories": [
+            {
+              "Value": "BA.2.86",
+              "Title": "BA.2.86",
+                "LevelName": "Variant under overvåkning"
+            },
+			      {
+              "Value": "DV.7.1",
+              "Title": "DV.7.1",
+                "LevelName": "Variant under overvåkning"
+            },
+            {
+              "Value": "XBB.1.16",
+              "Title": "XBB.1.16",
+              "LevelName": "Variant under overvåkning"
+            },
+			      {
+              "Value": "XBB.1.5-like+L455F+F456L",
+              "Title": "XBB.1.5-like+L455F+F456L",
+              "LevelName": "Variant under overvåkning"
+            }
+          ]
+        },
+        {
+          "Value": "CATEGORY",
+          "Title": "Kategori",
+          "Categories": [
+            {
+              "Value": "TOTAL_OBS",
+              "Title": "Totalt antall observasjoner",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-okt",
+              "Title": "Oktober antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-sep",
+              "Title": "September antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-aug",
+              "Title": "August antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-jul",
+              "Title": "Juli antall",
+              "LevelName": "Kategori"
+            }
+          ]
+        }
+    ],
+    "MeasureTypes": [
+        {
+          "Value": "ANTALL",
+          "Title": "Antall"
+        }
+      ],
+      "Flags": [
+        {
+          "Value": 0,
+          "Title": "",
+          "Text": "Verdi finnes i tabell"
+        },
+        {
+          "Value": 1,
+          "Title": "..",
+          "Text": "Manglende data"
+        },
+        {
+          "Value": 2,
+          "Title": ".",
+          "Text": "Lar seg ikke beregne"
+        },
+        {
+          "Value": 3,
+          "Title": ":",
+          "Text": "Anonymisert"
+        },
+        {
+          "Value": 4,
+          "Title": "-",
+          "Text": "Data ikke tilgjengelig"
+        }
+      ]
+}

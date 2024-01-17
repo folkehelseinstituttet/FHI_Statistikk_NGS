@@ -1,0 +1,89 @@
+{
+    "Dimensions": [
+        {
+          "Value": "PANGO_SHORT",
+          "Title": "Variant av interesse",
+          "Categories": [
+            {
+              "Value": "BA.2.75",
+              "Title": "BA.2.75",
+                "LevelName": "Variant av interesse"
+            },
+            {
+              "Value": "XBB.1.5-like",
+              "Title": "XBB.1.5-like",
+                "LevelName": "Variant av interesse"
+            },
+            {
+              "Value": "XBB.1.5-like+F456L",
+              "Title": "XBB.1.5-like+F456L",
+                "LevelName": "Variant av interesse"
+            }
+          ]
+        },
+        {
+          "Value": "CATEGORY",
+          "Title": "Kategori",
+          "Categories": [
+            {
+              "Value": "TOTAL_OBS",
+              "Title": "Totalt antall observasjoner",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-okt",
+              "Title": "Oktober antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-sep",
+              "Title": "September antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-aug",
+              "Title": "August antall",
+              "LevelName": "Kategori"
+            },
+            {
+              "Value": "2023-jul",
+              "Title": "Juli antall",
+              "LevelName": "Kategori"
+            }
+          ]
+        }
+    ],
+    "MeasureTypes": [
+        {
+          "Value": "ANTALL",
+          "Title": "Antall"
+        }
+      ],
+      "Flags": [
+        {
+          "Value": 0,
+          "Title": "",
+          "Text": "Verdi finnes i tabell"
+        },
+        {
+          "Value": 1,
+          "Title": "..",
+          "Text": "Manglende data"
+        },
+        {
+          "Value": 2,
+          "Title": ".",
+          "Text": "Lar seg ikke beregne"
+        },
+        {
+          "Value": 3,
+          "Title": ":",
+          "Text": "Anonymisert"
+        },
+        {
+          "Value": 4,
+          "Title": "-",
+          "Text": "Data ikke tilgjengelig"
+        }
+      ]
+}

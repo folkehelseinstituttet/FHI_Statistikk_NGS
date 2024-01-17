@@ -5,53 +5,53 @@
           "Title": "Variant",
           "Categories": [
             {
-              "Value": "EG.5.1.1",
-              "Title": "EG.5.1.1",
+              "Value": "JG.3",
+              "Title": "JG.3",
                 "LevelName": "Variant"
             },
             {
+              "Value": "HK.3",
+              "Title": "HK.3",
+              "LevelName": "Variant"
+            },
+            {
+              "Value": "EG.5.1.1",
+              "Title": "EG.5.1.1",
+              "LevelName": "Variant"
+            },
+			      {
               "Value": "EG.5.1.3",
               "Title": "EG.5.1.3",
+                "LevelName": "Variant"
+            },
+            {
+              "Value": "EG.5.1",
+              "Title": "EG.5.1",
               "LevelName": "Variant"
             },
             {
-              "Value": "XBB.1.16",
-              "Title": "XBB.1.16",
+              "Value": "FL.1.5.1",
+              "Title": "FL.1.5.1",
               "LevelName": "Variant"
             },
             {
-              "Value": "EG.6.1",
-              "Title": "EG.6.1",
+              "Value": "HV.1",
+              "Title": "HV.1",
               "LevelName": "Variant"
             },
             {
-              "Value": "GE.1",
-              "Title": "GE.1",
+              "Value": "JD.1.1",
+              "Title": "JD.1.1",
               "LevelName": "Variant"
             },
             {
-              "Value": "XBB.1.16.15",
-              "Title": "XBB.1.16.15",
+              "Value": "XBB.1.16.11",
+              "Title": "XBB.1.16.11",
               "LevelName": "Variant"
             },
             {
-              "Value": "XBB.1.16.12",
-              "Title": "XBB.1.16.12",
-              "LevelName": "Variant"
-            },
-            {
-              "Value": "XBB.1.16.6",
-              "Title": "XBB.1.16.6",
-              "LevelName": "Variant"
-            },
-            {
-              "Value": "XBB.1.42.1",
-              "Title": "XBB.1.42.1",
-              "LevelName": "Variant"
-            },
-            {
-              "Value": "FE.1.1",
-              "Title": "FE.1.1",
+              "Value": "GK.1",
+              "Title": "GK.1",
               "LevelName": "Variant"
             }
           ]
@@ -62,22 +62,22 @@
           "Categories": [
             {
               "Value": "CURR_MONTH_ANTALL",
-              "Title": "Nåværende måned antall",
+              "Title": "Oktober antall",
               "LevelName": "Kategori"
             },
             {
               "Value": "PREV_MONTH_ANTALL",
-              "Title": "Forrige måned antall",
+              "Title": "September antall",
               "LevelName": "Kategori"
             },
             {
               "Value": "CURR_MONTH_PERC",
-              "Title": "Nåværende måned %",
+              "Title": "Oktober %",
               "LevelName": "Kategori"
             },
             {
               "Value": "PREV_MONTH_PERC",
-              "Title": "Forrige måned %",
+              "Title": "September %",
               "LevelName": "Kategori"
             },
             {
