@@ -2,6 +2,272 @@ library(tidyverse)
 library(lubridate)
 
 
+# Get data from BN --------------------------------------------------------
+
+
+# Source the file from Andreas Rohringer to get the latest data and variants
+#source("N:/Virologi/Influensa/ARoh/SARS_COV2/Scripts/BN_COVID-SQLquery.R")
+
+# Establish connection to the BN_Covid19 database on SQL Server
+con <- odbc::dbConnect(odbc::odbc(),
+                       Driver = "SQL Server",
+                       Server = "sql-bn-covid19",
+                       Database = "BN_Covid19")
+
+# Query the ENTRYFLD table to extract relevant data fields
+entryfld <- tbl(con, "ENTRYFLD") %>%
+  filter(FIELDID %in% c(272, 360)) %>%
+  pivot_wider(names_from = FIELDID, values_from = CONTENT) %>%
+  mutate(CONTENT = paste0(`272`, `360`, sep = ";")) %>%
+  select(KEY, CONTENT)  %>%
+  collect()
+
+# Query the ENTRYFLD table to extract NSP5 mutation data
+NSP5mut <- tbl(con, "ENTRYFLD") %>%
+  filter(FIELDID %in% "388") %>%
+  pivot_wider(names_from = FIELDID, values_from = CONTENT) %>%
+  rename(NSP5mut = `388`) %>%
+  collect()
+
+ORF1A <- tbl(con, "ENTRYFLD") %>%
+  filter(FIELDID %in% "270") %>%
+  pivot_wider(names_from = FIELDID, values_from = CONTENT) %>%
+  rename(ORF1A = `270`) %>%
+  collect()
+
+
+# Query the ENTRYTABLE table to extract relevant sequencing data
+entrytable <- tbl(con, "ENTRYTABLE") %>%
+  select(
+    KEY,
+    PROVE_TATT,
+    P,
+    FYLKENAVN,
+    ST,
+    MATERIALE,
+    PROSENTDEKNING_GENOM,
+    DEKNING_NANOPORE,
+    SEKV_OPPSETT_NANOPORE,
+    SEKV_OPPSETT_SWIFT7,
+    SEQUENCEID_NANO29,
+    SEQUENCEID_SWIFT,
+    COVERAGE_BREADTH_SWIFT,
+    GISAID_PLATFORM,
+    GENOTYPE_SVART_I_LABWARE,
+    COVERAGE_BREATH_EKSTERNE,
+    SAMPLE_CATEGORY,
+    INNSENDER,
+    COVERAGE_DEPTH_SWIFT,
+    COVARAGE_DEPTH_NANO,
+    S,
+    PANGOLIN_NOM,
+    FULL_PANGO_LINEAGE,
+    AR,
+    N,
+    K,
+    ORF1A,
+    ORF1B,
+    ORF3A,
+    E,
+    ORF6,
+    ORF7A,
+    ORF8,
+    ORF9B,
+    ORF14,
+    ORF10,
+    M
+  ) %>%
+  rename(
+    "Dekning_Artic" = PROSENTDEKNING_GENOM,
+    "Dekning_Swift" = COVERAGE_BREADTH_SWIFT,
+    "Dekning_Eksterne" = COVERAGE_BREATH_EKSTERNE,
+    "Dekning_Nano" = DEKNING_NANOPORE,
+    "Project" = P,
+    "HSP" = ST
+  ) %>%
+  collect()
+
+# Join the ENTRYFLD and NSP5mut tables with the ENTRYTABLE table to create a single dataset
+# Assuming you have a data frame named 'replacement_data' that contains the replacement values
+# Replace 'replacement_data' with the actual name of your replacement data frame
+
+allvariants <- entrytable %>%
+  left_join(entryfld, by = "KEY") %>%
+  mutate_all(list(~ na_if(., ""))) %>%
+  left_join(NSP5mut, by = "KEY") %>%
+  left_join(ORF1A, by = "KEY") %>%
+  mutate(ORF1A = coalesce(ORF1A.x, ORF1A.y)) %>%
+  select(-ends_with(".x"), -ends_with(".y"))%>%  # Remove temporary columns
+  
+  # Now 'ORF1A' column in 'allvariants' contains values from 'replacement_data' if empty
+  
+  mutate("S_merged" = coalesce(S, CONTENT), "flag" = if_else(is.na(S), 1, 0)) %>%
+  #NB! Here are changes from Andreas' code:
+  #mutate(week = week(as.Date(PROVE_TATT)), year = lubridate::year(as.Date(PROVE_TATT)), 
+  #       wy = tsibble::yearweek(as.Date(PROVE_TATT)),
+  #       my = tsibble::yearmonth(as.Date(PROVE_TATT))) %>% 
+  
+  filter(PROVE_TATT != "")
+
+# Convert all column values to UTF-8 encoding to deal with Norwegian letters
+allvariants[] <- lapply(allvariants, function(x)
+  iconv(x, from = "ISO-8859-1", to = "UTF-8"))
+allvariants <- as.data.frame(allvariants)
+
+# Filter out low quality samples
+allvariants_v <- allvariants %>%
+  filter((Dekning_Swift >= 70) |
+           (Dekning_Artic >= 70) |
+           (Dekning_Nano >= 70)  |
+           (Dekning_Eksterne >= 70)
+  ) %>%
+  filter (PANGOLIN_NOM != "#BESTILT#") %>%
+  filter (PANGOLIN_NOM != "Inkonklusiv") %>%
+  filter (PANGOLIN_NOM != "inkonklusiv") %>%
+  filter (PANGOLIN_NOM != "Se kommentar") %>%
+  filter (PANGOLIN_NOM != "Seekom") %>%
+  filter (PANGOLIN_NOM != "") %>%
+  filter (PANGOLIN_NOM != "Failed") %>%
+  filter (PANGOLIN_NOM != "failed") %>%
+  #filter (PANGOLIN_NOM != "Unassigned")%>%
+  filter (PANGOLIN_NOM != "NA")
+
+# Clean up
+rm(entrytable)
+rm(entryfld)
+rm(NSP5mut)
+rm(ORF1A)
+
+# Close connection 
+closeAllConnections()
+
+
+######################   Collapsing Pangolins  ##################################
+# https://www.who.int/activities/tracking-SARS-CoV-2-variants go here to update the list 
+# Add a Collapsed pango column to the dataset based on the long Pangolin lineage 
+
+allvariants_v <- allvariants_v %>%
+  mutate(Collapsed_pango = case_when(
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.2.86") ~ "BA.2.86.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.9.2.5.1") ~ "EG.5.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].1.16") ~ "XBB.1.16.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].2.3") ~ "XBB.2.3.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.2.3") ~ "XBB.2.3.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.9.2.5") ~ "EG.5.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.16") ~ "XBB.1.16.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.9.1") ~ "XBB.1.9.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.9.2") ~ "XBB.1.9.2.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.5") ~ "XBB.1.5.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].1.9.1") ~ "XBB.1.9.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].1.9.2") ~ "XBB.1.9.2.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.2.75.3.4.1.1.1.1") ~ "CH.1.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].1.5") ~ "XBB.1.5.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1].1.9") ~ "XBB.1.9.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.1.9") ~ "XBB.1.9.X",
+    data.table::like(FULL_PANGO_LINEAGE, "XBB.") ~ "XBB.X",
+    data.table::like(FULL_PANGO_LINEAGE, "BJ.1BM.1.1.1") ~ "XBB.X",
+    grepl("^\\[", FULL_PANGO_LINEAGE) ~ "Andre recombinanter",
+    data.table::like(FULL_PANGO_LINEAGE, "X") ~ "Andre recombinanter",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.5.3.1.1.1.1.1") ~ "BQ.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.2.75") ~ "BA.2.75.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.5") ~ "BA.5.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.4") ~ "BA.4.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.3") ~ "BA.3.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.2") ~ "BA.2.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529.1") ~ "BA.1.X",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.529") ~ "B.1.1.529",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.617") ~ "Delta",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.7") ~ "Alpha",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.351") ~ "Beta",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.28.1") ~ "Gamma",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.427") | data.table::like(FULL_PANGO_LINEAGE, "B.1.429") ~ "Epsilon",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.28.2") ~ "Zeta",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.525") ~ "Eta",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.28.3") ~ "Theta",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.526") ~ "Iota",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.617.1") ~ "Kappa",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.1.1.37.1") ~ "Lambda",
+    data.table::like(FULL_PANGO_LINEAGE, "B.1.621") ~ "Mu",
+    TRUE ~ "Andre SARS CoV 2"
+  ))
+
+
+# Load the CSV file containing VirusVariant and included.sub.lineages
+variant_mappings_url <- "https://www.ecdc.europa.eu/sites/default/files/documents/PathogenVariant_public_mappings.csv"
+variant_mappings <- read.csv(variant_mappings_url)
+
+# Split the included.sub.lineages into separate variants
+variant_mappings$included.sub.lineages <- strsplit(variant_mappings$included.sub.lineages, "\\|")
+
+# Ensure that included.sub.lineages are character vectors
+variant_mappings$included.sub.lineages <- lapply(variant_mappings$included.sub.lineages, as.character)
+
+# Modify the find_matched_variant function to return a single value (if any) rather than a vector
+find_matched_variant <- function(PANGOLIN_NOM) {
+  matched_variants <- variant_mappings$VirusVariant[sapply(variant_mappings$included.sub.lineages, function(variants) PANGOLIN_NOM %in% variants)]
+  if (length(matched_variants) > 0) {
+    return(matched_variants[1])  # Return the first matched variant
+  } else {
+    return(NA)
+  }
+}
+
+# Match included.sub.lineages and create a new column "Tessy" in the dataframe
+allvariants_v$Tessy <- sapply(allvariants_v$PANGOLIN_NOM, find_matched_variant)
+
+
+allvariants_v <- allvariants_v %>%
+  mutate(
+    Tessy = case_when(
+      data.table::like(FULL_PANGO_LINEAGE, "XBF") ~ "BA.2.75",
+      data.table::like(FULL_PANGO_LINEAGE, "XBK") ~ "BA.2.75",
+      grepl("XBB.1.5-like\\+F456L", Tessy) & grepl("L455F", S_merged) ~ "XBB.1.5-like+L455F+F456L",
+      grepl("BA.2.75", Tessy) & grepl("DV.7.1", PANGOLIN_NOM) ~ "DV.7.1",
+      grepl("BA.2", Tessy) & grepl("BA.2.86", PANGOLIN_NOM) ~ "BA.2.86",
+      grepl("XBB.1.5-like", Tessy) & grepl("[BJ.1BM.1.1.1].1.16", FULL_PANGO_LINEAGE) ~ "XBB.1.16",
+      grepl("XBB.1.5-like", Tessy) & grepl("XBB.1.16", FULL_PANGO_LINEAGE) ~ "XBB.1.16",
+      TRUE ~ Tessy  # Keep the original value for other cases
+    )
+  )
+
+
+# Define custom colors for each Collapsed_pango name
+custom_colors <- c(
+  "BA.2.86.X" = "#83e4da",
+  "XBB.1.16.X" = "#CD6090",
+  "XBB.2.3.X" = "#EE799F",
+  "EG.5.X" = "#EEA9B8",
+  "EG.5.1.X" = "#ff5733",
+  "XBB.1.9.X" = "#481B6DFF",
+  "XBB.1.9.1.X" = "#9932CC",
+  "XBB.1.9.2.X" = "#DDA0DD",
+  "XBB.1.5.X" = "#EE2C2C",
+  "CH.1.1.X" = "#2F6B8EFF",
+  "XBB.X" = "#8B1A1A",
+  "BQ.1.X" = "#31B57BFF",
+  "BA.2.75.X" = "#FFF68F",
+  "BA.5.X" = "#556B2F",
+  "BA.4.X" = "#8BD646FF",
+  "BA.3.X" = "#C0FF3E",
+  "BA.2.X" = "#CDC673",
+  "BA.1.X" = "#00EE00",
+  "B.1.1.529" = "#26AD81FF",
+  "Omicron"= "#00ffc4",
+  "Delta" = "#FF8C00",
+  "Alpha" = "#97FFFF",
+  "Beta" = "#009ACD",
+  "Gamma" = "#104E8B",
+  "Epsilon" = "#CAE1FF",
+  "Andre SARS CoV 2" = "darkslategray",
+  "Mu" = "#668B8B",
+  "Lambda" = "#836FFF",
+  "Kappa" = "#27408B",
+  "Zeta" =  "#5D00D9",
+  "Theta" = "#0000ff",
+  "Kappa"= "#3399ff",
+  "Andre recombinanter" = "black"
+)
+
 # Top 10 variants ---------------------------------------------------------
 
 
@@ -14,18 +280,20 @@ years         <- c("2023")
 
 # Create variables to use in filtering
 current_year <- year(Sys.Date())
-current_month <- month(Sys.Date())
-current_month_label <- month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
+#current_month <- month(Sys.Date())
+# Hardcode current month.
+current_month <- 9
+current_month_label <- lubridate::month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
 current_yearmonth <- paste(current_year, current_month_label, sep = "-")
   
 if (current_month == 1) {
   previous_month <- 12
-  previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_year <- current_year-1
   previous_yearmonth <- paste(previous_year, previous_month_label, sep = "-")
 } else {
   previous_month <- current_month - 1
-  previous_month_label <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_yearmonth <- paste(current_year, previous_month_label, sep = "-")
 }
 
@@ -40,124 +308,7 @@ final_data <- crossing(month_names, years) %>%
   unite("YEARMONTH", c("YEAR", "MONTH"), sep = "-", remove = T) %>% 
   mutate(YEARMONTH = as.factor(YEARMONTH))
 
-
-# Get data from BN. Needs to be changed from Andreas
-
-con <- odbc::dbConnect(odbc::odbc(),
-                 Driver = "SQL Server",
-                 Server = "sql-bn-covid19",
-                 Database = "BN_Covid19")
-
-# Query the ENTRYTABLE table to extract relevant sequencing data
-allvariants <- tbl(con, "ENTRYTABLE") %>%
-  select(
-    KEY,
-    PROVE_TATT,
-    PROSENTDEKNING_GENOM,
-    DEKNING_NANOPORE,
-    COVERAGE_BREADTH_SWIFT,
-    COVERAGE_BREATH_EKSTERNE,
-    PANGOLIN_NOM,
-    FULL_PANGO_LINEAGE,
-    
-  ) %>%
-  rename(
-    "Dekning_Artic" = PROSENTDEKNING_GENOM,
-    "Dekning_Swift" = COVERAGE_BREADTH_SWIFT,
-    "Dekning_Eksterne" = COVERAGE_BREATH_EKSTERNE,
-    "Dekning_Nano" = DEKNING_NANOPORE,
-  ) %>%
-  collect()
-
-# Convert all column values to UTF-8 encoding
-allvariants[] <- lapply(allvariants, function(x)
-  iconv(x, from = "ISO-8859-1", to = "UTF-8"))
-
-# Filter out low quality samples
-allvariants_v <- allvariants  %>%
-  filter((Dekning_Swift >= 70) |
-           (Dekning_Artic >= 70) |
-           (Dekning_Nano >= 70)  |
-           (Dekning_Eksterne >= 70)
-  ) %>%
-  filter (PANGOLIN_NOM != "#BESTILT#") %>%
-  filter (PANGOLIN_NOM != "Inkonklusiv") %>%
-  filter (PANGOLIN_NOM != "inkonklusiv") %>%
-  filter (PANGOLIN_NOM != "Se kommentar") %>%
-  filter (PANGOLIN_NOM != "Seekom") %>%
-  filter (PANGOLIN_NOM != "") %>%
-  filter (PANGOLIN_NOM != "Failed") %>%
-  filter (PANGOLIN_NOM != "failed") %>%
-  filter (PANGOLIN_NOM != "Unassigned")%>%
-  filter (PANGOLIN_NOM != "NA") %>%
-  filter(PROVE_TATT != "")
-
-# Collapsing Pangolins
-# https://www.who.int/activities/tracking-SARS-CoV-2-variants go here to update the list 
-# Add a Collapsed pango column to the dataset based on the long Pangolin lineage 
-
-# https://raw.githubusercontent.com/cov-lineages/pango-designation/master/lineage_notes.txt
-
-allvariants_v <- allvariants_v %>%
-  mutate(Collapsed_pango = case_when(
-    FULL_PANGO_LINEAGE == "B.1.1.529.2.86" ~ "BA.2.86.X",
-    FULL_PANGO_LINEAGE == "XBB.1.9.2.5.1" ~ "EG.5.1.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.16" ~ "XBB.1.16.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].2.3" ~ "XBB.2.3.X",
-    FULL_PANGO_LINEAGE == "XBB.2.3" ~ "XBB.2.3.X",
-    FULL_PANGO_LINEAGE == "XBB.1.9.2.5" ~ "EG.5.X",
-    FULL_PANGO_LINEAGE == "XBB.1.16" ~ "XBB.1.16.X",
-    FULL_PANGO_LINEAGE == "XBB.1.9.1" ~ "XBB.1.9.1.X",
-    FULL_PANGO_LINEAGE == "XBB.1.9.2" ~ "XBB.1.9.2.X",
-    FULL_PANGO_LINEAGE == "XBB.1.5" ~ "XBB.1.5.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9.1" ~ "XBB.1.9.1.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9.2" ~ "XBB.1.9.2.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.2.75.3.4.1.1.1.1" ~ "CH.1.1.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.5" ~ "XBB.1.5.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1].1.9" ~ "XBB.1.9.X",
-    FULL_PANGO_LINEAGE == "XBB.1.9" ~ "XBB.1.9.X",
-    FULL_PANGO_LINEAGE == "XBB." ~ "XBB.X",
-    FULL_PANGO_LINEAGE == "BJ.1BM.1.1.1" ~ "XBB.X",
-    grepl("^\\[", FULL_PANGO_LINEAGE) ~ "Andre rekombinanter",
-    FULL_PANGO_LINEAGE == "X" ~ "Andre rekombinanter",
-    FULL_PANGO_LINEAGE == "B.1.1.529.5.3.1.1.1.1.1" ~ "BQ.1.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.2.75" ~ "BA.2.75.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.5" ~ "BA.5.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.4" ~ "BA.4.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.3" ~ "BA.3.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.2" ~ "BA.2.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529.1" ~ "BA.1.X",
-    FULL_PANGO_LINEAGE == "B.1.1.529" ~ "B.1.1.529",
-    FULL_PANGO_LINEAGE == "B.1.617" ~ "Delta",
-    FULL_PANGO_LINEAGE == "B.1.1.7" ~ "Alpha",
-    FULL_PANGO_LINEAGE == "B.1.351" ~ "Beta",
-    FULL_PANGO_LINEAGE == "B.1.1.28.1" ~ "Gamma",
-    FULL_PANGO_LINEAGE == "B.1.427" | FULL_PANGO_LINEAGE == "B.1.429" ~ "Epsilon",
-    FULL_PANGO_LINEAGE == "B.1.1.28.2" ~ "Zeta",
-    FULL_PANGO_LINEAGE == "B.1.525" ~ "Eta",
-    FULL_PANGO_LINEAGE == "B.1.1.28.3" ~ "Theta",
-    FULL_PANGO_LINEAGE == "B.1.526" ~ "Iota",
-    FULL_PANGO_LINEAGE == "B.1.617.1" ~ "Kappa",
-    FULL_PANGO_LINEAGE == "B.1.1.1.37.1" ~ "Lambda",
-    FULL_PANGO_LINEAGE == "B.1.621" ~ "Mu",
-    TRUE ~ "Andre SARS CoV 2"
-  ))
-
-# Clean up
-rm(allvariants)
-
-# Close connection 
-closeAllConnections()
-
-# Convert comma to dot in the coverage
-allvariants_v <- allvariants_v %>% 
-  # Replace a few double commas
-  mutate(Dekning_Nano = str_replace(Dekning_Nano, ",,", ",")) %>% 
-  # Change comma to decimal for the coverage
-  mutate(Dekning_Artic = str_replace(Dekning_Artic, ",", "."),
-         Dekning_Swift = str_replace(Dekning_Swift, ",", "."),
-         Dekning_Nano = str_replace(Dekning_Nano, ",", "."),
-         Dekning_Eksterne = str_replace(Dekning_Eksterne, ",", "."))
+allvariants_v <- tibble(allvariants_v)
 
 # Filter the data
 tmp <- allvariants_v %>% 
@@ -173,7 +324,7 @@ tmp <- allvariants_v %>%
 # Create year and month column
 tmp <- tmp %>% 
   mutate(YEAR = year(PROVE_TATT),
-         MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
+         MONTH = lubridate::month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
   unite("YEARMONTH", c(YEAR, MONTH), sep = "-", remove = FALSE) %>% 
   mutate(YEARMONTH = factor(YEARMONTH))
   
@@ -393,103 +544,127 @@ jsonlite::write_json(category_file_list, "/home/jonr/Prosjekter/NIPH_NGS_vis/dat
 
 # Variants of Interest ----------------------------------------------------
 
-# Define months of interest
-current_year <- year(Sys.Date())
-current_month <- month(Sys.Date())
-current_month_label <- month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
-current_yearmonth <- paste(current_year, current_month_label, sep = "-")
+
+# Change current month if you need to
+#current_month_label <- lubridate::month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
+#current_yearmonth <- paste(current_year, current_month_label, sep = "-")
+
+# Need to include last 4 months
 if (current_month == 1) {
   previous_month             <- 12
-  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label       <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_year              <- current_year-1
   previous_yearmonth         <- paste(previous_year, previous_month_label, sep = "-")
   previous_two_month         <- 11
-  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_month_label   <- lubridate::month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_two_yearmonth     <- paste(previous_year, previous_two_month_label, sep = "-")
   previous_three_month       <- 10
-  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_month_label <- lubridate::month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
 } else if (current_month == 2) {
   previous_month             <- 1
-  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label       <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
   previous_year              <- current_year-1
   previous_two_month         <- 12
-  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_month_label   <- lubridate::month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_two_yearmonth     <- paste(previous_year, previous_two_month_label, sep = "-")
   previous_three_month       <- 11
-  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_month_label <- lubridate::month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
 } else if (current_month == 3) {
   previous_month             <- 2
-  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label       <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
   previous_two_month         <- 1
-  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_month_label   <- lubridate::month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_two_yearmonth     <- paste(current_year, previous_two_month_label, sep = "-")
   previous_year              <- current_year-1
   previous_three_month       <- 12
-  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_month_label <- lubridate::month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_three_yearmonth   <- paste(previous_year, previous_three_month_label, sep = "-")
 } else {
   previous_month             <- current_month - 1
-  previous_month_label       <- month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_month_label       <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_yearmonth         <- paste(current_year, previous_month_label, sep = "-")
   previous_two_month         <- current_month - 2
-  previous_two_month_label   <- month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_two_month_label   <- lubridate::month(previous_two_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_two_yearmonth     <- paste(current_year, previous_two_month_label, sep = "-")
   previous_three_month       <- current_month - 3
-  previous_three_month_label <- month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_three_month_label <- lubridate::month(previous_three_month, label = T, abbr = T, locale = "Norwegian_Norway")
   previous_three_yearmonth   <- paste(current_year, previous_three_month_label, sep = "-")
 }
 
 # Filter the data
-tmp <- allvariants_v %>% 
-  # Fjerne evt positiv controll
-  filter(str_detect(KEY, "pos", negate = TRUE)) %>%
+
+# For the VOI I will take out the lineages called "BA.2.75", "XBB.1.5-like+F456L" and "XBB.1.5-like+L455F+F456L" from
+# the Tessy column and count these
+
+ba2.75 <- allvariants_v %>% 
+  filter(Tessy == "BA.2.75") %>% 
   # Fix date format
   mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
-  # Keep samples from current year only
-  #filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
-  # Extract variants of interest
-  filter(str_detect(PANGOLIN_NOM, "^XBB\\.1\\.5\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.16\\.*") | str_detect(PANGOLIN_NOM, "^EG\\.5\\.*")) %>% 
   # select relevant columns
-  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango) %>% 
-  # Create short names for the variants
-  mutate(PANGO_SHORT = case_when(
-    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.5") ~ "XBB.1.5",
-    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.16") ~ "XBB.1.16",
-    str_detect(PANGOLIN_NOM, "^EG\\.5") ~ "EG.5"
-  )) 
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy) 
+
+xbb1.5 <- allvariants_v %>% 
+  filter(Tessy == "XBB.1.5-like+F456L") %>% 
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy)
+
+xbb1.5_2 <- allvariants_v %>% 
+  filter(Tessy == "XBB.1.5-like+L455F+F456L") %>% 
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy)
+
+# combine data
+tmp <- bind_rows(
+  ba2.75,
+  xbb1.5,
+  xbb1.5_2
+)
 
 # Get total observations for each VOI
-xbb1.5_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.5")  %>% add_column("CATEGORY" = "TOTAL_OBS")
-xbb1.16_tot  <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.16") %>% add_column("CATEGORY" = "TOTAL_OBS")
-eg.5_tot     <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "EG.5")     %>% add_column("CATEGORY" = "TOTAL_OBS")
+ba2.75_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "BA.2.75")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.5_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "XBB.1.5-like+F456L")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.5_2_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "XBB.1.5-like+L455F+F456L")  %>% add_column("CATEGORY" = "TOTAL_OBS")
 
 # Count per month of interest
 pr_month <- tmp %>% 
   # Create year and month column
-  mutate(YEAR = year(PROVE_TATT),
-         MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
+  mutate(YEAR = lubridate::year(PROVE_TATT),
+         MONTH = lubridate::month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
   unite("YEARMONTH", c(YEAR, MONTH), sep = "-", remove = FALSE) %>% 
   mutate(YEARMONTH = factor(YEARMONTH)) %>% 
   # Filter out months of interest
   filter(YEARMONTH == current_yearmonth | YEARMONTH == previous_yearmonth | YEARMONTH == previous_two_yearmonth | YEARMONTH == previous_three_yearmonth) %>% 
   # Count VOI's per month
-  count(YEARMONTH, PANGO_SHORT, name = "ANTALL") %>% 
+  count(YEARMONTH, Tessy, name = "ANTALL") %>% 
   # Rename YEARMONTH to CATEGORY for joining with total observations
   rename("CATEGORY" = YEARMONTH)
 
 # Join the data
 final_data <- bind_rows(
+  ba2.75_tot,
   xbb1.5_tot,
-  xbb1.16_tot,
-  eg.5_tot,
+  xbb1.5_2_tot,
   pr_month
-  ) %>% 
+  ) %>%  
   # Add flags for FHI Statistikk
-  add_column("SPVFLAGG" = 0) # 0 er default og betyr at verdien finnes i tabellen
+  add_column("SPVFLAGG" = 0) %>%  # 0 er default og betyr at verdien finnes i tabellen
+  # Complete the series to fill in any missing months for any variant
+  complete(CATEGORY, Tessy) %>% 
+  # NA in ANTALL means that we have no observations of that variant for that month
+  mutate(SPVFLAGG = case_when(
+    is.na(ANTALL) ~ 1,
+    .default = SPVFLAGG
+  )) %>% 
+  # Change NA to 0
+  mutate(ANTALL = replace_na(ANTALL, 0))
 
 # Write as csv
 write_csv(final_data, 
@@ -499,62 +674,74 @@ write_csv(final_data,
 
 # Variants under monitoring -----------------------------------------------
 
+
 # Filter the data
-tmp <- allvariants_v %>% 
-  # Fjerne evt positiv controll
-  filter(str_detect(KEY, "pos", negate = TRUE)) %>%
+
+xbb1.16 <- allvariants_v %>% 
+  filter(str_detect(Tessy, "XBB.1.6")) %>% 
   # Fix date format
   mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
-  # Keep samples from current year only
-  #filter(PROVE_TATT >= paste0(current_year, "-01-01")) %>% 
-  # Extract variants of interest
-  filter(str_detect(PANGOLIN_NOM, "^BA\\.2\\.75\\.*") | str_detect(PANGOLIN_NOM, "^CH\\.1\\.1\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.1\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.2\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.2\\.3\\.*") | str_detect(PANGOLIN_NOM, "^XBB\\.2\\.86\\.*")) %>% 
   # select relevant columns
-  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango) %>% 
-  # Create short names for the variants
-  mutate(PANGO_SHORT = case_when(
-    str_detect(PANGOLIN_NOM, "^BA\\.2\\.75")     ~ "BA.2.75",
-    str_detect(PANGOLIN_NOM, "^CH\\.1\\.1")      ~ "CH.1.1",
-    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.1") ~ "XBB.1.9.1",
-    str_detect(PANGOLIN_NOM, "^XBB\\.1\\.9\\.2") ~ "XBB.1.9.2",
-    str_detect(PANGOLIN_NOM, "^XBB\\.2\\.3")     ~ "XBB.2.3",
-    str_detect(PANGOLIN_NOM, "^XBB\\.2\\.86")    ~ "XBB.2.86"
-  )) 
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy) 
+
+xbb1.5 <- allvariants_v %>% 
+  filter(Tessy == "XBB.1.5-like+F456L") %>% 
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy)
+
+xbb1.5_2 <- allvariants_v %>% 
+  filter(Tessy == "XBB.1.5-like+L455F+F456L") %>% 
+  # Fix date format
+  mutate("PROVE_TATT" = ymd(PROVE_TATT)) %>% 
+  # select relevant columns
+  select(PROVE_TATT, PANGOLIN_NOM, FULL_PANGO_LINEAGE, Collapsed_pango, Tessy)
+
+# combine data
+tmp <- bind_rows(
+  ba2.75,
+  xbb1.5,
+  xbb1.5_2
+)
 
 # Get total observations for each VOI
-ba2.75_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "BA.2.75")   %>% add_column("CATEGORY" = "TOTAL_OBS")
-ch1.1_tot    <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "CH.1.1")    %>% add_column("CATEGORY" = "TOTAL_OBS")
-xbb1.9.1_tot <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.9.1") %>% add_column("CATEGORY" = "TOTAL_OBS")
-xbb1.9.2_tot <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.1.9.2") %>% add_column("CATEGORY" = "TOTAL_OBS")
-xbb2.3_tot   <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.2.3")   %>% add_column("CATEGORY" = "TOTAL_OBS")
-xbb2.86_tot  <- tmp %>% count(PANGO_SHORT, name = "ANTALL") %>% filter(PANGO_SHORT == "XBB.2.86")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+ba2.75_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "BA.2.75")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.5_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "XBB.1.5-like+F456L")  %>% add_column("CATEGORY" = "TOTAL_OBS")
+xbb1.5_2_tot   <- tmp %>% count(Tessy, name = "ANTALL") %>% filter(Tessy == "XBB.1.5-like+L455F+F456L")  %>% add_column("CATEGORY" = "TOTAL_OBS")
 
 # Count per month of interest
 pr_month <- tmp %>% 
   # Create year and month column
-  mutate(YEAR = year(PROVE_TATT),
-         MONTH = month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
+  mutate(YEAR = lubridate::year(PROVE_TATT),
+         MONTH = lubridate::month(PROVE_TATT, label = T, abbr = T, locale = "Norwegian_Norway")) %>% 
   unite("YEARMONTH", c(YEAR, MONTH), sep = "-", remove = FALSE) %>% 
   mutate(YEARMONTH = factor(YEARMONTH)) %>% 
   # Filter out months of interest
   filter(YEARMONTH == current_yearmonth | YEARMONTH == previous_yearmonth | YEARMONTH == previous_two_yearmonth | YEARMONTH == previous_three_yearmonth) %>% 
   # Count VOI's per month
-  count(YEARMONTH, PANGO_SHORT, name = "ANTALL") %>% 
+  count(YEARMONTH, Tessy, name = "ANTALL") %>% 
   # Rename YEARMONTH to CATEGORY for joining with total observations
   rename("CATEGORY" = YEARMONTH)
 
 # Join the data
 final_data <- bind_rows(
   ba2.75_tot,
-  ch1.1_tot,
-  xbb1.9.1_tot,
-  xbb1.9.2_tot,
-  xbb2.3_tot,
-  xbb2.86_tot,
+  xbb1.5_tot,
+  xbb1.5_2_tot,
   pr_month
-) %>% 
+) %>%  
   # Add flags for FHI Statistikk
-  add_column("SPVFLAGG" = 0) # 0 er default og betyr at verdien finnes i tabellen
+  add_column("SPVFLAGG" = 0) %>%  # 0 er default og betyr at verdien finnes i tabellen
+  # Complete the series to fill in any missing months for any variant
+  complete(CATEGORY, Tessy) %>% 
+  # NA in ANTALL means that we have no observations of that variant for that month
+  mutate(SPVFLAGG = case_when(
+    is.na(ANTALL) ~ 1,
+    .default = SPVFLAGG
+  )) %>% 
+  # Change NA to 0
+  mutate(ANTALL = replace_na(ANTALL, 0))
 
 # Write as csv
 write_csv(final_data, 
