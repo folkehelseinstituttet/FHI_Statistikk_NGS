@@ -5,11 +5,91 @@ library(lubridate)
 df <- read_csv("data/HCV_NGS.csv")
 
 
-df <- df %>% 
+HCV_genotypes_per_year <- 
+df %>% 
   # Create date column
   mutate("Date" = as.Date(SAMPLED_DATE)) %>% 
-  # Create year and month column
+  # Create year and month column 
+  mutate("Year"  = lubridate::year(Date),
+         "Month" = lubridate::month(Date)) %>% 
+  unite("YearMonth", c(Year, Month), sep = "-", remove = FALSE) %>% 
+  # remove completely duplicated rows
+  distinct() %>% 
+  # Remove samples with no sampling date
+  filter(!is.na(Date)) %>%
+  # Keep only rows with "Resultat" in NAME
+  filter(NAME == "Resultat") %>% 
+  # Clean up genotype names
+  mutate(ENTRY = case_when(
+    str_detect(ENTRY, "IKKE")        ~ "IKKE",
+    str_detect(ENTRY, "Ikke")        ~ "IKKE",
+    str_detect(ENTRY, "\\.")         ~ "IKKE",
+    str_detect(ENTRY, "kansellert")  ~ "IKKE",
+    str_detect(ENTRY, "A")           ~ "a",
+    str_detect(ENTRY, "B")           ~ "b",
+    str_detect(ENTRY, "C")           ~ "c",
+    str_detect(ENTRY, "D")           ~ "d",
+    str_detect(ENTRY, "H")           ~ "H",
+    str_detect(ENTRY, "N")           ~ "n",
+    str_detect(ENTRY, "2k1b")        ~ "2k1b",
+    .default = ENTRY
+  )) %>% 
+  # Count the number of each genotype per year
+  count(Year, ENTRY, name = "Genotypes_per_year") %>% 
+  # Group by year to calculate total samples per year
+  group_by(Year) %>%
+  mutate(Total_per_year = sum(Genotypes_per_year), # Total samples per year
+         Percentage = round(100 * Genotypes_per_year / Total_per_year, digits = 2)) %>% # Percentage of each genotype per year
+  ungroup() %>%
 
+  # Reorder and rename columns
+  select(YEAR = Year,
+         GENOTYPE = ENTRY,
+         ANTALL = Genotypes_per_year,
+         PERCENT = Percentage) %>% 
+  add_column("FLAGG" = "0") %>% 
+  # Complete the series for all genotypes per year
+  complete(YEAR, GENOTYPE) %>% 
+  replace_na(list(ANTALL = 0, PERCENT = 0, FLAGG = "0")) 
+  
+write_csv(HCV_genotypes_per_year, "HCV_genotypes_per_year.csv")
+
+# Set up data structures
+
+# Create the data structure that will be filled with values. Using strings only to get factors later in crossing()
+month_numbers <- as.character(1:12)
+month_names   <- lubridate::month(1:12, label = T, abbr = T, locale = "Norwegian_Norway") 
+years         <- c("2023")
+
+# Create variables to use in filtering
+current_year <- year(Sys.Date())
+#current_month <- month(Sys.Date())
+# Hardcode current month.
+current_month <- 9
+current_month_label <- lubridate::month(current_month, label = T, abbr = T, locale = "Norwegian_Norway")
+current_yearmonth <- paste(current_year, current_month_label, sep = "-")
+
+if (current_month == 1) {
+  previous_month <- 12
+  previous_month_label <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_year <- current_year-1
+  previous_yearmonth <- paste(previous_year, previous_month_label, sep = "-")
+} else {
+  previous_month <- current_month - 1
+  previous_month_label <- lubridate::month(previous_month, label = T, abbr = T, locale = "Norwegian_Norway")
+  previous_yearmonth <- paste(current_year, previous_month_label, sep = "-")
+}
+
+
+# Create all possible combinations of month and year 
+final_data <- crossing(month_names, years) %>% 
+  rename(
+    "MONTH"  = "month_names",
+    "YEAR"   = "years"
+  ) %>% 
+  # Create YEARMONTH column for combining later
+  unite("YEARMONTH", c("YEAR", "MONTH"), sep = "-", remove = T) %>% 
+  mutate(YEARMONTH = as.factor(YEARMONTH))
 
 
 #### OLD 
