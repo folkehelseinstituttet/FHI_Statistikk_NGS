@@ -106,9 +106,9 @@ library(lubridate)
 
 # Establish connection to the BN_Covid19 database on SQL Server
 con <- odbc::dbConnect(odbc::odbc(),
-                       Driver = "SQL Server",
-                       Server = "sql-bn-covid19",
-                       Database = "BN_Covid19")
+                       Driver = "",
+                       Server = "",
+                       Database = "")
 
 # Query the ENTRYFLD table to extract relevant data fields
 entryfld <- tbl(con, "ENTRYFLD") %>%
